@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## [5.1.0-character-refinement] - 2026-11-16
+### Changed
+- **Substantial 3D Character Model & Material Refinement:**
+  - **Eliminated Clipping & Primitive Visuals:** Completely overhauled head and face assembly with smooth beveled squircle geometry, a recessed curved obsidian face visor with zero z-fighting/clipping, and flush-mounted vibrant cyan LED capsule eyes.
+  - **Premium PBR Materials:**
+    - White Armor: Warm glossy pearl ceramic (`Roughness 0.12`, `Clearcoat 0.45`).
+    - Royal Blue Armor: Rich saturated deep royal blue (`Roughness 0.18`, `Metallic 0.08`).
+    - Golden Yellow Details: Bright sunny golden yellow (`Roughness 0.25`, `Metallic 0.0`) for scarf, toe caps, ear rims, and antenna.
+    - Mechanical Joints: Deep graphite navy (`Roughness 0.32`, `Metallic 0.18`) with compact recessed ball sockets.
+    - Visor Display: Ultra-glossy deep obsidian black (`Roughness 0.03`, `Clearcoat 1.0`).
+    - Energy Cores: Luminous neon electric cyan with high emissive intensity.
+  - **Sculpted Scarf & Chassis:** Upgraded yellow neck scarf into soft fleece cowl with natural folds, front triangular bib with blue inlay & glowing cyan core, and dual S-curve fluttering tails.
+  - **Articulated Limbs & Hands:** Refined shoulder pauldrons, upper arm sleeves, elbow pivots, wrist cuff rings with cyan cross decals, and chibi robotic hands with palm, thumb, and sculpted fingers.
+  - **Stable Platformer Boots:** Bulbous golden yellow toe caps, blue heel/sole wraps, and cyan ankle LED dots sitting perfectly flat on ground.
+  - **Saved Deliverables:**
+    - `assets/models/character/bot.blend` & `assets/models/character/bot.glb`.
+    - `assets/models/source/bot.blend` & `assets/models/characters/bot.glb`.
+    - Godot `import/blender/enabled=false` configured to ensure pure GLB runtime loading without headless editor warnings.
+  - **Verification:** Both test suites (`test_character_animation.gd` and `test_gameplay.gd`) passing 100%. Re-exported Web build deployed live.
+
 ## [5.0.0-turnaround-bot] - 2026-11-16
 ### Added
 - **Complete 3D Character Rebuild Matching Authoritative Character Turnaround Sheet:**

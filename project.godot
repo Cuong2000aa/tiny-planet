@@ -73,3 +73,7 @@ renderer/rendering_method.web="gl_compatibility"
 anti_aliasing/quality/msaa_3d=1
 textures/vram_compression/import_etc2_astc=true
 textures/vram_compression/import_s3tc_bptc=true
+
+[filesystem]
+
+import/blender/enabled=false

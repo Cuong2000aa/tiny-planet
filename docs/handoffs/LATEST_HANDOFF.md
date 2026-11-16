@@ -7,32 +7,34 @@ Tiny Planet is an autonomous 3D adventure platformer developed for the web using
 - **Phase:** Phase 5: Authoritative Character Turnaround Production ("B.O.T Hero Turnaround") — Completed & Verified!
 - **Public URL:** https://cuong2000aa.github.io/tiny-planet/
 - **GitHub Repository:** https://github.com/Cuong2000aa/tiny-planet
-- **Milestone Tag:** `v5.0-turnaround-bot`
+- **Milestone Tag:** `v5.1-character-refinement`
 
 ## 3. Completed Work in Phase 5
-1. **Turnaround Sheet Fidelity:**
-   - Authored in Blender 5.2.3 LTS (`assets/blender/scripts/generate_character.py`).
-   - Saved editable source `.blend` to `assets/models/source/bot.blend` and `assets/blender/source/bot.blend`.
-   - Exported optimized game-ready GLB to `assets/models/bot.glb` and `assets/models/characters/bot.glb`.
-   - Rebuilt all features matching the official Turnaround Sheet:
-     - Rounded ivory ceramic helmet with royal blue crown cap.
-     - Recessed curved glass visor with flush cyan LED capsule pill eyes.
-     - Yellow sprout antenna curving up and back with teardrop fin.
-     - Concentric ear assemblies (yellow rim, blue housing, glowing cyan donut ring, navy hub).
-     - Puffy yellow scarf collar with front triangular bib & glowing cyan energy core.
-     - Dual dynamic fluttering scarf tails.
-     - Compact white chassis with beveled panels, navy waist, and blue backpack module with downward cyan triangle core.
-     - Articulated limbs with navy joints, white sleeves, blue wrist cuffs, and cyan forearm glyphs.
-     - Articulated chibi hands with thumbs and fingers in platformer grip.
-     - High-appeal boots with yellow bulbous toe caps, blue soles/heels, and cyan ankle LED dots.
-2. **Armature & Rigging:**
-   - Complete humanoid robot skeleton: `Root`, `Hips`, `Torso`, `Chest`, `Neck`, `Head`, `Antenna.L/R`, `Shoulder.L/R`, `Arm.L/R`, `Hand.L/R`, `Thumb.L/R`, `Fingers.L/R`, `Leg.L/R`, `Foot.L/R`.
-3. **14 Tailored Animation Actions:**
-   - `Idle`, `Idle_Secondary`, `Walk`, `Run`, `Jump_Start`, `Jump_Loop`, `Fall`, `Landing`, `Turn_Left`, `Turn_Right`, `Collect`, `Interact`, `Victory`, `Respawn`.
-4. **Automated Verification & Web Deployment:**
-   - `test_character_animation.gd` (100% passed).
-   - `test_gameplay.gd` (100% passed).
-   - Re-exported single-threaded Web release build to `web-build/` and deployed live to GitHub Pages.
+1. **Substantial 3D Character Refinement:**
+   - Overhauled Blender modeling in `assets/blender/scripts/generate_character.py`.
+   - Saved editable Blender projects to `assets/models/character/bot.blend`, `assets/models/source/bot.blend`, and `assets/blender/source/bot.blend`.
+   - Exported optimized game-ready GLBs to `assets/models/character/bot.glb`, `assets/models/characters/bot.glb`, and `assets/models/bot.glb`.
+   - Replaced all primitive stacked shapes with smooth beveled quad surfaces:
+     - Rounded ivory ceramic helmet with smooth outer bezel.
+     - Deep black glass visor lens with zero clipping artifacts.
+     - Flush-mounted cyan LED capsule pill eyes.
+     - Golden yellow sprout antenna with aerodynamic teardrop leaf.
+     - Concentric ear assemblies with yellow rim, blue housing, cyan glowing ring, and navy hub.
+     - Puffy golden yellow fleece scarf with front triangular bib & glowing cyan energy core.
+     - Dual S-curve fluttering tails over the shoulders.
+     - Beveled white torso chassis with glowing cyan chest core, navy pelvis harness, and royal blue backpack.
+     - Articulated limbs with compact navy joints, white sleeves, blue wrist cuffs, and outer cyan cross decals.
+     - Modeled chibi robotic hands with palm, opposable thumb, and sculpted fingers.
+     - High-appeal boots with bulbous yellow toe caps, blue heel/sole wrap, and cyan ankle LED dots.
+2. **Material Overhaul:**
+   - High-end PBR materials: warm pearl white (`coat=0.45`), saturated royal blue, bright golden yellow, deep graphite navy, obsidian glass (`coat=1.0`), and neon cyan emissive.
+3. **Rigging & Animation Integrity:**
+   - Full humanoid skeleton preserved (`Root`, `Hips`, `Torso`, `Chest`, `Neck`, `Head`, `Antenna.L/R`, `Shoulder.L/R`, `Arm.L/R`, `Hand.L/R`, `Thumb.L/R`, `Fingers.L/R`, `Leg.L/R`, `Foot.L/R`).
+   - All 14 custom animations preserved and verified.
+4. **Verification & Deployment:**
+   - `test_character_animation.gd`: 100% passed.
+   - `test_gameplay.gd`: 100% passed.
+   - Release Web export completed and deployed live to GitHub Pages.
 
 ## 4. How to Run & Verify
 ```bash
