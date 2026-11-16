@@ -1,0 +1,7 @@
+# Godot 4+ .gitignore
+.godot/
+*.tmp
+.DS_Store
+Thumbs.db
+*.blend1
+*.blend2
