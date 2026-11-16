@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file.
 
+## [8.0.0-astro-bot] - 2026-11-16
+### Added
+- **B.O.T Astro Bot Style 3D Master Rebuild:**
+  - Fully modeled and rigged B.O.T in Blender 5.2.3 LTS embodying the iconic Astro Bot aesthetic.
+  - Chibi ~2.5 heads tall golden ratio with bouncy, lovable platforming silhouette.
+  - Smooth convex obsidian visor with expressive vertical cyan capsule LED eyes.
+  - Organic curved golden-yellow sprout antenna on crown.
+  - 4-tier concentric circular ear disc speakers with glowing cyan rings.
+  - Flowing yellow cape/scarf with front triangular bandana bib, blue/cyan emblem, and dual fluttering tails.
+  - Glossy ceramic porcelain white armor with rich royal cobalt blue panels.
+  - Rounded jetpack exploration backpack with cyan reactor triangle.
+  - Platformer boots with rounded bulbous yellow toe bumper caps, blue soles, and cyan laser thruster slits.
+  - 13 deformation bones and all 14 animation actions tested and passing 100% in Godot 4.7.1.
+  - Fresh WebGL 2.0 release build exported to `web-build/index.html`.
+
+## [7.0.0-turnaround-match] - 2026-11-16
+### Changed
+- **B.O.T Authoritative Character Turnaround Master Production Pass:**
+  - **Full Turnaround Sheet Match:** Completely rebuilt B.O.T in Blender 5.2.3 LTS strictly matching the attached Character Turnaround Sheet and Game Character Model Sheet (~2.5 heads tall, Astro Bot aesthetic).
+  - **Organic Subdivided Geometry:** Modeled cute aerodynamic dome helmet ($X: 0.44\text{m}, Y: 0.38\text{m}, Z: 0.37\text{m}$) and convex curved obsidian glass visor.
+  - **Expressive Pill Capsule Eyes:** Glowing neon cyan pill LEDs tilted $2.5^\circ$ inward for playful, friendly curiosity.
+  - **Royal Blue Helmet Canopy:** Subdivided quad cap arching over the brow, dome, and flowing down the back.
+  - **Concentric Ear Discs & Sprout Antenna:** Concentric rings (yellow outer chamfer, blue housing, glowing cyan concentric ring, graphite hub) and curved golden-yellow sprout antenna.
+  - **Yellow Draped Scarf:** Soft fabric cowl around neck, front triangular bib with blue inverted triangle and cyan chevron, plus fluttering rear tails.
+  - **Pear-Shaped Torso & Recessed Reactor:** Glossy pearl white pear torso, recessed cyan triangle core, graphite waist chassis.
+  - **Exploration Backpack:** Royal blue module with recessed glowing cyan triangle.
+  - **Platformer Boots:** Subdivided shoe with golden yellow rounded toe cap, royal blue sole, and cyan heel slit.
+  - **Full Verification & Web Export:** Passed `test_character_animation.gd` and `test_gameplay.gd` with 100% assertions, exported to `web-build/`.
+
 ## [6.5.0-premium-bot] - 2026-11-16
 ### Changed
 - **B.O.T Character Refinement — Premium Game Character Pass:**

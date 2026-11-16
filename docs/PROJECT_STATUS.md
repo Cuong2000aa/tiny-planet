@@ -1,9 +1,9 @@
 # Project Status — Tiny Planet
 
 ## Current Status
-- **Current Milestone:** Phase 6.5: B.O.T Character Refinement — Premium Game Character Pass — Completed & Verified!
-- **Overall Progress:** 100% Core Prototype, Production 3D Art & Character Turnaround Verification Complete
-- **Status Summary:** Following the prompt's detailed character design direction, B.O.T has undergone a comprehensive character art refinement in Blender 5.2.3 LTS. Overhauled the body silhouette from primitive toy aesthetics into a console-quality adventure protagonist. Features a draped yellow fabric adventure scarf with natural folds, front bandana bib, blue/cyan inverted emblem, and dual fluttering ribbon tails; layered sculpted ceramic pectoral breastplate with integrated blue/cyan triangular reactor core; dark graphite navy mechanical inner chassis; angular yet smoothly beveled broad shoulder pauldrons with visible elbow hinge mechanics; flared white gauntlets with royal blue cuff rings and cyan status glyphs; articulated robotic gloves with palm chassis, opposable thumb, fingers, and backplate; muscular thigh armor over dark ball joints; articulated mechanical knee caps; flared shin armor gaiters with outer cyan LED indicators; and athletic robotic sneakers with bulbous golden yellow toe bumpers, white heel counters, and multi-tiered royal blue tread soles. Verified via Godot test suites (`test_character_animation.gd` & `test_gameplay.gd`), Web release build exported, and deployed live to GitHub Pages.
+- **Current Milestone:** Phase 8: B.O.T Astro Bot Style 3D Character Master Pass — Completed & Verified!
+- **Overall Progress:** 100% Core Prototype, Production 3D Art & Astro Bot Character Integration
+- **Status Summary:** B.O.T has been completely rebuilt in Blender 5.2.3 LTS faithfully matching the beloved Astro Bot design language and the project's character model sheets: Chibi ~2.5 heads tall proportions, glossy porcelain white armor, smooth convex obsidian visor with glowing cyan capsule LED eyes, playful curved yellow sprout antenna, 4-tier concentric ear disc speakers, flying yellow cape & bandana scarf with blue/cyan emblem and fluttering rear tails, rounded chest core with inverted triangle reactor, blue jetpack module, and rounded platformer boots with yellow toe bumpers and cyan laser thrusters. 100% verified across Godot test suites (`test_character_animation.gd` & `test_gameplay.gd`) and exported to WebGL 2.0 (`web-build/`).
 
 ## Completed Milestones
 - [x] **Phase 1: Core Prototype & WebGL Baseline (v1.0-prototype)**
@@ -12,15 +12,25 @@
 - [x] **Phase 4: Official Model Sheet Character Production (v4.0-official-bot)**
 - [x] **Phase 5: Authoritative Character Turnaround Production (v5.0-turnaround-bot)**
 - [x] **Phase 6: Production-Quality 20-Component Articulated Character (v6.0-production-bot)**
-- [x] **Phase 6.5: B.O.T Character Refinement — Premium Game Character Pass (v6.5-premium-bot):**
-  - [x] **Draped Adventure Scarf:** Draped fabric cowl with natural folds, front triangular bandana fold with blue/cyan inverted emblem, and dual fluttering S-curved ribbon tails with fabric thickness.
-  - [x] **Layered Engineered Torso:** White ceramic pectoral breastplate tapering to waist, recessed cyan triangular reactor core, and dark graphite navy inner mechanical chassis.
-  - [x] **Broad Heroic Shoulders & Articulated Arms:** Angular smoothly beveled pauldrons with outer flanges, articulated elbow hinge with side pivot pin, flared ceramic gauntlets with wrist cuff and cyan glyph, and articulated robotic gloves.
-  - [x] **Athletic Adventure Boots & Legs:** Sculpted thigh armor, dedicated mechanical knee caps, flared shin gaiters, and aerodynamic sneakers with yellow toe caps, white counters, and royal blue runner soles.
-  - [x] **Premium PBR Materials:** Pearl white ceramic with specular clearcoat, deep royal cobalt blue armor, rich sunny yellow fabric, glossy obsidian visor display, and neon electric cyan glow.
-  - [x] **13-Bone Humanoid Rig & 14 Animations:** 100% compatible with Godot `Skeleton3D` and `AnimationPlayer`.
-  - [x] **Automated Verification:** `test_character_animation.gd` and `test_gameplay.gd` passing with 100% assertions.
-  - [x] **Web Export & Live Deployment:** Exported to `web-build/` and deployed live to GitHub Pages.
+- [x] **Phase 7: B.O.T Authoritative Character Turnaround Master Pass (v7.0-turnaround-match)**
+- [x] **Phase 8: B.O.T Astro Bot Style 3D Master Pass (v8.0-astro-bot):**
+  - [x] **Astro Chibi Proportions:** Cute ~2.5 heads tall ratio, rounded body, sturdy cute limbs.
+  - [x] **Glossy Visor & LED Eyes:** Curved obsidian visor with glowing cyan capsule eyes.
+  - [x] **Yellow Flying Cape & Scarf:** Soft fabric cowl, front bandana bib with emblem, and fluttering tails.
+  - [x] **Sprout Antenna & Ear Speakers:** Playful yellow sprout on crown, concentric ear discs with cyan LED rings.
+  - [x] **Jetpack & Thruster Boots:** Rounded blue backpack module and platformer shoes with yellow toe caps and cyan thruster slits.
+  - [x] **Rig & Animations:** 13 deformation bones and 14 animation actions 100% verified in Godot.
+  - [x] **WebGL Export:** Fresh release exported to `web-build/index.html`.
+  - [x] **Smooth Rounded Helmet & Convex Visor:** Replaced boxy TV head with a cute, wide-proportioned aerodynamic dome shell ($X: 0.44\text{m}, Y: 0.38\text{m}, Z: 0.37\text{m}$) and convex curved obsidian glass visor.
+  - [x] **Expressive Cyan LED Eyes:** Vertical cyan capsule LEDs with inward tilt for curious, friendly emotion.
+  - [x] **Royal Blue Helmet Canopy:** Subdivided quad cap arching over the brow, dome, and flowing down the back.
+  - [x] **Concentric Ear Discs & Sprout Antenna:** Golden yellow beveled outer rims, blue housing, glowing cyan concentric ring, graphite hub, and curved yellow sprout antenna with backward curl.
+  - [x] **Yellow Draped Scarf:** Soft fabric cowl around neck, front triangular bib with blue inverted triangle and cyan chevron, plus fluttering rear tails.
+  - [x] **Pear-Shaped Torso & Recessed Reactor:** Glossy white pear torso, recessed cyan triangle core, graphite waist chassis.
+  - [x] **Rounded Exploration Backpack:** Royal blue module with recessed glowing cyan triangle.
+  - [x] **Platformer Boots:** Subdivided shoe with golden yellow rounded toe cap, royal blue sole, and cyan heel slit.
+  - [x] **Engine Compatibility:** 13 deformation bones, 14 animation actions, 100% test pass.
+  - [x] **Web Export:** WebGL 2.0 release compiled to `web-build/`.
 
 ## Next Recommended Tasks
 - Level 2: Sky Archipelago Ruins (vertical platforming with moving stone platforms and interactive laser mirrors).
