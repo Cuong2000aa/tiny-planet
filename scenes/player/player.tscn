@@ -6,7 +6,7 @@
 [ext_resource type="AudioStream" path="res://assets/audio/land.wav" id="4_sfx_land"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1"]
-radius = 0.38
+radius = 0.34
 height = 1.15
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_interact"]

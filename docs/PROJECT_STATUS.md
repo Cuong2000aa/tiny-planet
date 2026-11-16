@@ -1,44 +1,29 @@
 # Project Status — Tiny Planet
 
 ## Current Status
-- **Current Milestone:** Phase 3: B.O.T Character Redesign, Blender Rigging & Professional Animation System — Completed & Verified!
-- **Overall Progress:** 95% (Complete Stylized Character, Full Animation Suite, Playable, Visually Polished & Deployed)
-- **Status Summary:** B.O.T has been completely redesigned, rigged with a 13-bone skeletal deformation armature in Blender 5.2.3 LTS, skinned via dedicated vertex groups and Armature modifier into an optimized single-mesh model, and animated with 14 distinct keyframed animation actions (`Idle`, `Idle_Secondary`, `Walk`, `Run`, `Jump_Start`, `Jump_Loop`, `Fall`, `Landing`, `Turn_Left`, `Turn_Right`, `Collect`, `Interact`, `Victory`, `Respawn`). Integrated seamlessly into Godot 4.7.1 Stable Standard with an Animation State Machine in `PlayerController`, speed-proportional walk/run stride scaling, Astro Bot stylized turn banking, and responsive one-shot actions. Both the comprehensive animation test suite (`test_character_animation.gd`) and full gameplay test suite (`test_gameplay.gd`) pass 100%. Web release build exported and deployed to GitHub Pages.
+- **Current Milestone:** Phase 3.5: Complete B.O.T Character Silhouette Redesign ("The Modular Retro-Chibi Explorer") — Completed & Verified!
+- **Overall Progress:** 98% (Completely Redesigned Protagonist, 13-Bone Skeletal Rig, 14 Tailored Animations, Playable, Visually Polished & Deployed)
+- **Status Summary:** The old egg-shaped robot silhouette has been completely discarded and replaced with a brand-new, premium stylized adventure robot design (Concept A: "The Modular Retro-Chibi Explorer") modeled, rigged, and animated from scratch in Blender 5.2.3 LTS. The new protagonist features a clearly separated chamfered TV-monitor helmet with deep dark visor and expressive tilted cyan LED eyes, headphone audio canisters with sunset-orange trim, angled communication fin antennas, visible mechanical neck collar, a tapered trapezoid chest chassis with glowing reactor core medallion, backpack generator with dual angled rocket thrusters, fully segmented arms and legs with distinct ball/pivot joints and 3-finger mech hands, and high-tech angular runner sneakers with dark magnetic soles and cyan heel glow. All 14 animation actions were re-authored specifically for this new anatomy, collision bounds in `player.tscn` reconfigured to radius 0.34m, and both `test_character_animation.gd` and `test_gameplay.gd` pass 100%. Single-threaded Web release exported and deployed to GitHub Pages.
 
 ## Completed Milestones
 - [x] **Phase 1: Core Prototype & WebGL Baseline (v1.0-prototype):**
   - Character controller, camera follow, 3 energy fragments, switch, bridge, portal, victory state, mobile touch UI, WebGL export, GitHub Pages deployment.
 - [x] **Phase 2: Visual Overhaul & 3D Asset Production (v2.0-visual-overhaul):**
   - Sculpted islands, modular stepping stones, stylized vegetation, ruin props, ACES tone mapping, dust and collection VFX.
-- [x] **Phase 3: B.O.T Character Redesign & Animation System (v3.0-character-animation):**
-  - [x] **Blender Production:** Armature `BOT_Armature` created with 13 bones (`Root`, `Torso`, `Head`, `Antenna.L`, `Antenna.R`, `Arm.L`, `Hand.L`, `Arm.R`, `Hand.R`, `Leg.L`, `Foot.L`, `Leg.R`, `Foot.R`).
-  - [x] **Skinning & Modeling:** Watertight porcelain ceramic body, dark reflective visor, expressive cyan LED eyes, gold medallion, thruster backpack, articulated mittens and magnetic boots. Zero tearing or deformation distortion.
-  - [x] **14 Animation Actions Authored in Blender:**
-    - `Idle` (60f / 2.0s loop): subtle body breathing, micro head tilts, springy antenna delay.
-    - `Idle_Secondary` (90f / 3.0s): curious head tilt, cute double-hand wave, look-around.
-    - `Walk` (30f / 1.0s loop): alternating strides, arm counter-swings, torso bobbing.
-    - `Run` (20f / 0.67s loop): energetic forward lean (-12°), high cadence, trailing antennas.
-    - `Jump_Start` (10f / 0.33s): anticipation crouch (-0.09m) and explosive upward launch.
-    - `Jump_Loop` (20f / 0.67s loop): aerodynamic airborne flight, tucked boots, thruster posture.
-    - `Fall` (20f / 0.67s loop): reactive balance-seeking flail, legs dangling, antenna trail.
-    - `Landing` (15f / 0.5s): deep impact squash compression (-0.12m), elastic rebound.
-    - `Turn_Left` / `Turn_Right` (12f / 0.4s): banking lean and anticipation head turns.
-    - `Collect` (24f / 0.8s): joyful celebration hop, double fist pump, chest puff.
-    - `Interact` (24f / 0.8s): deliberate forward step, right hand button press gesture.
-    - `Victory` (75f / 2.5s): 360° pirouette spin, double celebratory hops, side-to-side sway dance, hero freeze pose waving to player.
-    - `Respawn` (30f / 1.0s): reboot crouch, head snap, dust shake-off, energetic recovery.
-  - [x] **Godot Animation Architecture:**
-    - `PlayerController` animation state machine with cross-fade blend times and stride speed scaling.
-    - Stylized Astro Bot turn banking tilt on character body.
-    - One-shot action triggers: Collect on fragment touch, Interact on switch activation, Respawn on fall recovery, Victory on portal reach.
+- [x] **Phase 3.5: Complete B.O.T Silhouette Redesign (v3.5-bot-redesign):**
+  - [x] **Explored Silhouettes:** Evaluated Modular Retro-Chibi Explorer, Aerodynamic Jet-Scout, and Asymmetrical Wanderer. Selected Modular Retro-Chibi Explorer as strongest for visual charm, silhouette readability, and animation potential.
+  - [x] **Blender Production:** Completely rebuilt model in Blender 5.2.3 LTS (`bot_character.blend`). Created 13-bone skeletal rig `BOT_Armature`. Backup of previous model safely retained in `assets/blender/source/bot_character_v2_backup.blend`.
+  - [x] **14 Rebuilt Animation Actions:**
+    - `Idle`, `Idle_Secondary`, `Walk`, `Run`, `Jump_Start`, `Jump_Loop`, `Fall`, `Landing`, `Turn_Left`, `Turn_Right`, `Collect`, `Interact`, `Victory`, `Respawn` tailored to the new anatomy.
+  - [x] **Godot Integration & Collision Tuning:**
+    - Replaced model in `scenes/player/player.tscn`.
+    - Tightened `CapsuleShape3D` radius from 0.38m to 0.34m to match the new athletic silhouette.
   - [x] **Automated Testing:**
     - `scripts/tests/test_character_animation.gd`: 100% assertions passed.
     - `scripts/tests/test_gameplay.gd`: 100% assertions passed.
   - [x] **Web Export & Deployment:**
-    - Exported Web build to `web-build/` with single-threaded WebGL 2.0 compatibility.
-    - Tested via local HTTP server with HTTP 200 on all assets.
+    - Exported Web build to `web-build/` and deployed to GitHub Pages.
 
 ## Next Recommended Tasks
-- Future level expansions (Level 2: Sky Archipelago Ruins with moving puzzle mechanisms).
-- Sound volume slider in pause menu.
-- Interactive creatures or friendly robot NPCs with dialogue emotes.
+- Level 2: Sky Archipelago Ruins (vertical platforming with moving stone platforms and interactive laser mirrors).
+- Audio options in pause menu (master, SFX, and music volume sliders).
