@@ -48,7 +48,7 @@ def keyframe_bone(pose_bone, frame, loc=None, rot_deg=None, scale=None):
         pose_bone.scale = scale
         pose_bone.keyframe_insert(data_path="scale", frame=frame)
 
-def build_new_bot_character():
+def build_model_sheet_bot():
     clean_scene()
     script_dir = os.path.dirname(os.path.abspath(__file__))
     source_dir = os.path.join(script_dir, "..", "source")
@@ -57,17 +57,19 @@ def build_new_bot_character():
     os.makedirs(source_dir, exist_ok=True)
     os.makedirs(char_model_dir, exist_ok=True)
 
-    # 1. High-Quality Stylized PBR Materials
-    # Premium satin white ceramic armor panels
-    mat_white = create_pbr_material("Mat_Bot_WhiteArmor", (0.94, 0.94, 0.97, 1.0), metallic=0.08, roughness=0.22)
-    # Gunmetal / dark titanium for mechanical joints, neck, chassis, sole
-    mat_dark = create_pbr_material("Mat_Bot_DarkChassis", (0.16, 0.18, 0.22, 1.0), metallic=0.85, roughness=0.30)
-    # Deep gloss obsidian visor screen
-    mat_visor = create_pbr_material("Mat_Bot_Visor", (0.02, 0.03, 0.05, 1.0), metallic=0.95, roughness=0.08)
-    # High-intensity glowing cyan LED for eyes and power matrices
-    mat_cyan_glow = create_pbr_material("Mat_Bot_CyanLED", (0.0, 0.95, 1.0, 1.0), metallic=0.0, roughness=0.15, emission=(0.0, 0.95, 1.0, 1.0), emission_strength=4.0)
-    # Sunset energetic orange / warm gold trim accents
-    mat_orange = create_pbr_material("Mat_Bot_OrangeAccent", (1.0, 0.48, 0.08, 1.0), metallic=0.45, roughness=0.28)
+    # 1. PBR Materials from Official Character Model Sheet Palette
+    # Primary: Ivory Warm White Porcelain Ceramic
+    mat_white = create_pbr_material("Mat_Bot_WhiteCeramic", (0.96, 0.96, 0.98, 1.0), metallic=0.06, roughness=0.20)
+    # Secondary: Rich Royal Blue
+    mat_royal_blue = create_pbr_material("Mat_Bot_RoyalBlue", (0.10, 0.32, 0.88, 1.0), metallic=0.30, roughness=0.24)
+    # Accent: Bright Golden Yellow (Scarf, Sprout, Toe Caps, Ear Rims)
+    mat_yellow = create_pbr_material("Mat_Bot_BrightYellow", (0.98, 0.74, 0.08, 1.0), metallic=0.12, roughness=0.28)
+    # Dark Details: Deep Navy / Graphite for Ball Joints & Hands
+    mat_navy = create_pbr_material("Mat_Bot_DeepNavy", (0.08, 0.10, 0.16, 1.0), metallic=0.65, roughness=0.32)
+    # Deep Glossy Obsidian Visor
+    mat_visor = create_pbr_material("Mat_Bot_GlossVisor", (0.02, 0.03, 0.05, 1.0), metallic=0.92, roughness=0.08)
+    # Luminous Glowing Cyan for LED Eyes, Concentric Ear Rings, & Triangle Energy Cores
+    mat_cyan_glow = create_pbr_material("Mat_Bot_CyanGlow", (0.0, 0.95, 1.0, 1.0), metallic=0.0, roughness=0.15, emission=(0.0, 0.95, 1.0, 1.0), emission_strength=4.5)
 
     # 2. Armature Setup (13 Deformation Bones)
     bpy.ops.object.armature_add(enter_editmode=True, align='WORLD', location=(0, 0, 0))
@@ -81,337 +83,344 @@ def build_new_bot_character():
     eb_root.head = (0, 0, 0)
     eb_root.tail = (0, 0, 0.15)
 
-    # Torso (Center of mass, chassis)
-    create_bone(arm_data, 'Torso', 'Root', head=(0, 0, 0.36), tail=(0, 0, 0.68))
-    # Head (Separate neck and monitor helmet)
-    create_bone(arm_data, 'Head', 'Torso', head=(0, 0, 0.68), tail=(0, 0, 1.04))
-    # Antennas
-    create_bone(arm_data, 'Antenna.L', 'Head', head=(-0.16, 0.02, 1.04), tail=(-0.24, 0.02, 1.28))
-    create_bone(arm_data, 'Antenna.R', 'Head', head=(0.16, 0.02, 1.04), tail=(0.24, 0.02, 1.28))
+    # Torso (Chassis & Scarf anchor)
+    create_bone(arm_data, 'Torso', 'Root', head=(0, 0, 0.34), tail=(0, 0, 0.66))
+    # Head (Rounded helmet & visor)
+    create_bone(arm_data, 'Head', 'Torso', head=(0, 0, 0.66), tail=(0, 0, 1.05))
+    # Yellow Sprout Leaf Antenna on head crown
+    create_bone(arm_data, 'Antenna.L', 'Head', head=(0, -0.04, 1.05), tail=(0, -0.12, 1.25))
+    create_bone(arm_data, 'Antenna.R', 'Head', head=(0, -0.04, 1.05), tail=(0, -0.12, 1.25))
 
-    # Segmented Arms
-    create_bone(arm_data, 'Arm.L', 'Torso', head=(-0.24, 0.0, 0.60), tail=(-0.36, 0.02, 0.44))
-    create_bone(arm_data, 'Hand.L', 'Arm.L', head=(-0.36, 0.02, 0.44), tail=(-0.44, 0.06, 0.24))
+    # Articulated Arms & Hands
+    create_bone(arm_data, 'Arm.L', 'Torso', head=(-0.20, 0.0, 0.54), tail=(-0.31, 0.02, 0.40))
+    create_bone(arm_data, 'Hand.L', 'Arm.L', head=(-0.31, 0.02, 0.40), tail=(-0.38, 0.05, 0.22))
 
-    create_bone(arm_data, 'Arm.R', 'Torso', head=(0.24, 0.0, 0.60), tail=(0.36, 0.02, 0.44))
-    create_bone(arm_data, 'Hand.R', 'Arm.R', head=(0.36, 0.02, 0.44), tail=(0.44, 0.06, 0.24))
+    create_bone(arm_data, 'Arm.R', 'Torso', head=(0.20, 0.0, 0.54), tail=(0.31, 0.02, 0.40))
+    create_bone(arm_data, 'Hand.R', 'Arm.R', head=(0.31, 0.02, 0.40), tail=(0.38, 0.05, 0.22))
 
-    # Segmented Legs
-    create_bone(arm_data, 'Leg.L', 'Root', head=(-0.15, 0.0, 0.36), tail=(-0.15, 0.0, 0.16))
-    create_bone(arm_data, 'Foot.L', 'Leg.L', head=(-0.15, 0.0, 0.16), tail=(-0.15, 0.16, 0.0))
+    # Articulated Legs & Boots
+    create_bone(arm_data, 'Leg.L', 'Root', head=(-0.13, 0.0, 0.34), tail=(-0.13, 0.0, 0.16))
+    create_bone(arm_data, 'Foot.L', 'Leg.L', head=(-0.13, 0.0, 0.16), tail=(-0.13, 0.14, 0.0))
 
-    create_bone(arm_data, 'Leg.R', 'Root', head=(0.15, 0.0, 0.36), tail=(0.15, 0.0, 0.16))
-    create_bone(arm_data, 'Foot.R', 'Leg.R', head=(0.15, 0.0, 0.16), tail=(0.15, 0.16, 0.0))
+    create_bone(arm_data, 'Leg.R', 'Root', head=(0.13, 0.0, 0.34), tail=(0.13, 0.0, 0.16))
+    create_bone(arm_data, 'Foot.R', 'Leg.R', head=(0.13, 0.0, 0.16), tail=(0.13, 0.14, 0.0))
 
     bpy.ops.object.mode_set(mode='OBJECT')
 
-    # 3. Model Meshes — Concept A: "The Modular Retro-Chibi Explorer"
     mesh_parts = []
 
     # =========================================================================
-    # A. HEAD GROUP (Chamfered TV-Monitor Helmet + Curved Visor + Expressive Eyes)
+    # A. HEAD GROUP (Rounded White Helmet + Blue Crown + Visor + LED Eyes + Ear Discs + Sprout)
     # =========================================================================
-    # 1. Main Helmet: Beveled chamfered box (NOT egg-shaped!)
-    bpy.ops.mesh.primitive_cube_add(size=1.0, location=(0, 0, 0.86))
+    # 1. Main White Helmet Dome
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=32, ring_count=24, radius=0.235, location=(0, 0, 0.85))
     m_helmet = bpy.context.active_object
     m_helmet.name = "Part_Helmet"
-    m_helmet.scale = (0.44, 0.38, 0.34)
+    m_helmet.scale = (1.02, 0.96, 0.94)
     bpy.ops.object.transform_apply(scale=True)
-    mod_bev = m_helmet.modifiers.new(name="Bevel", type='BEVEL')
-    mod_bev.width = 0.07
-    mod_bev.segments = 3
-    bpy.ops.object.modifier_apply(modifier="Bevel")
     bpy.ops.object.shade_smooth()
     m_helmet.data.materials.append(mat_white)
     assign_vertex_group(m_helmet, "Head")
     mesh_parts.append(m_helmet)
 
-    # 2. Visor Screen: Dark glossy curved front panel
-    bpy.ops.mesh.primitive_cube_add(size=1.0, location=(0, 0.18, 0.86))
+    # 2. Royal Blue Helmet Crown Cap (Arching over top and visor brow)
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=32, ring_count=20, radius=0.24, location=(0, 0.01, 0.88))
+    m_blue_cap = bpy.context.active_object
+    m_blue_cap.name = "Part_HelmetBlueCap"
+    m_blue_cap.scale = (0.95, 0.88, 0.75)
+    bpy.ops.object.transform_apply(scale=True)
+    bpy.ops.object.shade_smooth()
+    m_blue_cap.data.materials.append(mat_royal_blue)
+    assign_vertex_group(m_blue_cap, "Head")
+    mesh_parts.append(m_blue_cap)
+
+    # 3. Glossy Dark Visor Screen (Inset curved front face)
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=28, ring_count=20, radius=0.18, location=(0, 0.12, 0.84))
     m_visor = bpy.context.active_object
     m_visor.name = "Part_Visor"
-    m_visor.scale = (0.36, 0.05, 0.24)
+    m_visor.scale = (1.08, 0.44, 0.72)
     bpy.ops.object.transform_apply(scale=True)
-    mod_vbev = m_visor.modifiers.new(name="Bevel", type='BEVEL')
-    mod_vbev.width = 0.03
-    mod_vbev.segments = 2
-    bpy.ops.object.modifier_apply(modifier="Bevel")
     bpy.ops.object.shade_smooth()
     m_visor.data.materials.append(mat_visor)
     assign_vertex_group(m_visor, "Head")
     mesh_parts.append(m_visor)
 
-    # 3. Expressive Cyan LED Eyes: Bold rounded capsules on visor
-    for side, x, rot in [("L", -0.095, -4), ("R", 0.095, 4)]:
-        bpy.ops.mesh.primitive_cylinder_add(vertices=16, radius=0.045, depth=0.03, location=(x, 0.21, 0.86))
+    # 4. Bright Cyan LED Eyes (Large expressive capsule pills)
+    for side, x, rot in [("L", -0.088, -3), ("R", 0.088, 3)]:
+        bpy.ops.mesh.primitive_cylinder_add(vertices=16, radius=0.038, depth=0.025, location=(x, 0.205, 0.84))
         eye = bpy.context.active_object
         eye.name = f"Part_Eye_{side}"
         eye.rotation_euler = (math.radians(90), 0, math.radians(rot))
-        eye.scale = (0.9, 1.0, 1.4) # Chibi pill shape
+        eye.scale = (0.85, 1.0, 1.35)
         bpy.ops.object.transform_apply(rotation=True, scale=True)
         bpy.ops.object.shade_smooth()
         eye.data.materials.append(mat_cyan_glow)
         assign_vertex_group(eye, "Head")
         mesh_parts.append(eye)
 
-    # 4. Audio Headphone Canisters (Left and Right ears)
-    for side, x, rot in [("L", -0.23, 90), ("R", 0.23, -90)]:
-        # Dark ear base
-        bpy.ops.mesh.primitive_cylinder_add(vertices=16, radius=0.08, depth=0.05, location=(x, 0, 0.86))
-        ear_base = bpy.context.active_object
-        ear_base.name = f"Part_EarBase_{side}"
-        ear_base.rotation_euler = (0, math.radians(rot), 0)
+    # 5. Ear Canister Modules (Left and Right: Yellow Outer Rim + Blue Middle + Glowing Cyan Concentric Ring)
+    for side, x, rot in [("L", -0.235, 90), ("R", 0.235, -90)]:
+        # Outer Yellow Rim Disc
+        bpy.ops.mesh.primitive_cylinder_add(vertices=24, radius=0.075, depth=0.025, location=(x, 0, 0.84))
+        ear_rim = bpy.context.active_object
+        ear_rim.name = f"Part_EarRim_{side}"
+        ear_rim.rotation_euler = (0, math.radians(rot), 0)
         bpy.ops.object.transform_apply(rotation=True)
         bpy.ops.object.shade_smooth()
-        ear_base.data.materials.append(mat_dark)
-        assign_vertex_group(ear_base, "Head")
-        mesh_parts.append(ear_base)
+        ear_rim.data.materials.append(mat_yellow)
+        assign_vertex_group(ear_rim, "Head")
+        mesh_parts.append(ear_rim)
 
-        # Orange outer accent ring
-        bpy.ops.mesh.primitive_cylinder_add(vertices=16, radius=0.065, depth=0.06, location=(x * 1.08, 0, 0.86))
+        # Middle Royal Blue Housing Disc
+        bpy.ops.mesh.primitive_cylinder_add(vertices=24, radius=0.065, depth=0.032, location=(x * 1.04, 0, 0.84))
+        ear_mid = bpy.context.active_object
+        ear_mid.name = f"Part_EarMid_{side}"
+        ear_mid.rotation_euler = (0, math.radians(rot), 0)
+        bpy.ops.object.transform_apply(rotation=True)
+        bpy.ops.object.shade_smooth()
+        ear_mid.data.materials.append(mat_royal_blue)
+        assign_vertex_group(ear_mid, "Head")
+        mesh_parts.append(ear_mid)
+
+        # Glowing Cyan Concentric Donut Ring (Model Sheet Detail Feature)
+        bpy.ops.mesh.primitive_torus_add(major_radius=0.040, minor_radius=0.010, major_segments=24, minor_segments=8, location=(x * 1.09, 0, 0.84))
         ear_ring = bpy.context.active_object
         ear_ring.name = f"Part_EarRing_{side}"
         ear_ring.rotation_euler = (0, math.radians(rot), 0)
         bpy.ops.object.transform_apply(rotation=True)
-        bpy.ops.object.shade_smooth()
-        ear_ring.data.materials.append(mat_orange)
+        ear_ring.data.materials.append(mat_cyan_glow)
         assign_vertex_group(ear_ring, "Head")
         mesh_parts.append(ear_ring)
 
-        # Cyan inner sensor dot
-        bpy.ops.mesh.primitive_uv_sphere_add(segments=12, ring_count=8, radius=0.03, location=(x * 1.15, 0, 0.86))
-        ear_dot = bpy.context.active_object
-        ear_dot.name = f"Part_EarDot_{side}"
-        bpy.ops.object.shade_smooth()
-        ear_dot.data.materials.append(mat_cyan_glow)
-        assign_vertex_group(ear_dot, "Head")
-        mesh_parts.append(ear_dot)
-
-    # =========================================================================
-    # B. ANTENNA SYSTEM (Communication Fin + Beacon array)
-    # =========================================================================
-    for side, x, sign in [("L", -0.15, -1), ("R", 0.15, 1)]:
-        # Angled titanium stem
-        bpy.ops.mesh.primitive_cylinder_add(vertices=12, radius=0.016, depth=0.20, location=(x, 0.02, 1.12))
-        stem = bpy.context.active_object
-        stem.name = f"Part_AntennaStem_{side}"
-        stem.rotation_euler = (math.radians(-6), math.radians(sign * 18), 0)
+        # Dark Navy Center Hub
+        bpy.ops.mesh.primitive_cylinder_add(vertices=16, radius=0.025, depth=0.035, location=(x * 1.08, 0, 0.84))
+        ear_hub = bpy.context.active_object
+        ear_hub.name = f"Part_EarHub_{side}"
+        ear_hub.rotation_euler = (0, math.radians(rot), 0)
         bpy.ops.object.transform_apply(rotation=True)
-        bpy.ops.object.shade_smooth()
-        stem.data.materials.append(mat_dark)
-        assign_vertex_group(stem, f"Antenna.{side}")
-        mesh_parts.append(stem)
+        ear_hub.data.materials.append(mat_navy)
+        assign_vertex_group(ear_hub, "Head")
+        mesh_parts.append(ear_hub)
 
-        # Orange mid-joint ring
-        bpy.ops.mesh.primitive_cylinder_add(vertices=12, radius=0.028, depth=0.03, location=(x * 1.25, 0.02, 1.12))
-        ring = bpy.context.active_object
-        ring.name = f"Part_AntennaRing_{side}"
-        ring.rotation_euler = (math.radians(-6), math.radians(sign * 18), 0)
-        bpy.ops.object.transform_apply(rotation=True)
-        ring.data.materials.append(mat_orange)
-        assign_vertex_group(ring, f"Antenna.{side}")
-        mesh_parts.append(ring)
-
-        # Glowing Cyan Beacon Orb
-        bpy.ops.mesh.primitive_uv_sphere_add(segments=16, ring_count=12, radius=0.05, location=(x * 1.48, 0.02, 1.23))
-        orb = bpy.context.active_object
-        orb.name = f"Part_AntennaOrb_{side}"
-        bpy.ops.object.shade_smooth()
-        orb.data.materials.append(mat_cyan_glow)
-        assign_vertex_group(orb, f"Antenna.{side}")
-        mesh_parts.append(orb)
-
-    # =========================================================================
-    # C. TORSO & CHASSIS (Tapered Chest + Visible Neck + Reactor Pack)
-    # =========================================================================
-    # 1. Visible Mechanical Neck Collar (connects Head to Torso)
-    bpy.ops.mesh.primitive_cylinder_add(vertices=16, radius=0.11, depth=0.08, location=(0, 0, 0.70))
-    m_neck = bpy.context.active_object
-    m_neck.name = "Part_Neck"
+    # 6. Yellow Sprout Leaf Antenna (Top Crown Mascot Feature)
+    # Curved stem
+    bpy.ops.mesh.primitive_cylinder_add(vertices=12, radius=0.014, depth=0.10, location=(0, -0.03, 1.09))
+    sprout_stem = bpy.context.active_object
+    sprout_stem.name = "Part_SproutStem"
+    sprout_stem.rotation_euler = (math.radians(-22), 0, 0)
+    bpy.ops.object.transform_apply(rotation=True)
     bpy.ops.object.shade_smooth()
-    m_neck.data.materials.append(mat_dark)
-    assign_vertex_group(m_neck, "Torso")
-    mesh_parts.append(m_neck)
+    sprout_stem.data.materials.append(mat_yellow)
+    assign_vertex_group(sprout_stem, "Antenna.L")
+    mesh_parts.append(sprout_stem)
 
-    # 2. Main Chest Chassis: Tapered trapezoid (wider at shoulders, compact at waist)
-    bpy.ops.mesh.primitive_cube_add(size=1.0, location=(0, 0, 0.52))
-    m_chest = bpy.context.active_object
-    m_chest.name = "Part_Chest"
-    m_chest.scale = (0.34, 0.26, 0.28)
+    # Sprout Leaf / Teardrop Fin
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=16, ring_count=12, radius=0.065, location=(0, -0.08, 1.18))
+    sprout_leaf = bpy.context.active_object
+    sprout_leaf.name = "Part_SproutLeaf"
+    sprout_leaf.scale = (0.42, 1.25, 0.45)
+    sprout_leaf.rotation_euler = (math.radians(-38), 0, 0)
+    bpy.ops.object.transform_apply(rotation=True, scale=True)
+    bpy.ops.object.shade_smooth()
+    sprout_leaf.data.materials.append(mat_yellow)
+    assign_vertex_group(sprout_leaf, "Antenna.L")
+    mesh_parts.append(sprout_leaf)
+
+    # =========================================================================
+    # B. NECK & BRIGHT YELLOW SCARF (Iconic Visual Identity Element)
+    # =========================================================================
+    # 1. Scarf Neck Collar Wrap
+    bpy.ops.mesh.primitive_torus_add(major_radius=0.14, minor_radius=0.035, major_segments=24, minor_segments=8, location=(0, 0, 0.65))
+    m_scarf_neck = bpy.context.active_object
+    m_scarf_neck.name = "Part_ScarfCollar"
+    m_scarf_neck.scale = (1.0, 0.92, 1.0)
     bpy.ops.object.transform_apply(scale=True)
-    mod_cbev = m_chest.modifiers.new(name="Bevel", type='BEVEL')
-    mod_cbev.width = 0.04
-    mod_cbev.segments = 3
-    bpy.ops.object.modifier_apply(modifier="Bevel")
-    bpy.ops.object.shade_smooth()
-    m_chest.data.materials.append(mat_white)
-    assign_vertex_group(m_chest, "Torso")
-    mesh_parts.append(m_chest)
+    m_scarf_neck.data.materials.append(mat_yellow)
+    assign_vertex_group(m_scarf_neck, "Torso")
+    mesh_parts.append(m_scarf_neck)
 
-    # 3. Orange Chest Trim Vents / Side Shoulders
-    for side, x in [("L", -0.16), ("R", 0.16)]:
-        bpy.ops.mesh.primitive_cube_add(size=1.0, location=(x, 0.02, 0.56))
-        vent = bpy.context.active_object
-        vent.name = f"Part_ChestVent_{side}"
-        vent.scale = (0.04, 0.22, 0.08)
-        bpy.ops.object.transform_apply(scale=True)
+    # 2. Front Triangular Neckerchief Point (Pointing down over chest)
+    bpy.ops.mesh.primitive_cone_add(vertices=3, radius1=0.09, radius2=0.0, depth=0.10, location=(0, 0.155, 0.60))
+    m_scarf_front = bpy.context.active_object
+    m_scarf_front.name = "Part_ScarfFront"
+    m_scarf_front.rotation_euler = (math.radians(160), 0, math.radians(180))
+    m_scarf_front.scale = (1.2, 0.35, 1.0)
+    bpy.ops.object.transform_apply(rotation=True, scale=True)
+    bpy.ops.object.shade_smooth()
+    m_scarf_front.data.materials.append(mat_yellow)
+    assign_vertex_group(m_scarf_front, "Torso")
+    mesh_parts.append(m_scarf_front)
+
+    # Front Blue Inlay Emblem on Scarf
+    bpy.ops.mesh.primitive_cone_add(vertices=3, radius1=0.045, radius2=0.0, depth=0.02, location=(0, 0.165, 0.61))
+    m_scarf_emblem = bpy.context.active_object
+    m_scarf_emblem.name = "Part_ScarfEmblem"
+    m_scarf_emblem.rotation_euler = (math.radians(160), 0, math.radians(180))
+    m_scarf_emblem.scale = (1.1, 0.3, 1.0)
+    bpy.ops.object.transform_apply(rotation=True, scale=True)
+    m_scarf_emblem.data.materials.append(mat_royal_blue)
+    assign_vertex_group(m_scarf_emblem, "Torso")
+    mesh_parts.append(m_scarf_emblem)
+
+    # 3. Dual Flying Scarf Tails (Fluttering over shoulders)
+    for side, x, rot_y in [("L", -0.13, -18), ("R", 0.13, 18)]:
+        bpy.ops.mesh.primitive_cube_add(size=1.0, location=(x, -0.16, 0.58))
+        tail = bpy.context.active_object
+        tail.name = f"Part_ScarfTail_{side}"
+        tail.scale = (0.05, 0.14, 0.02)
+        tail.rotation_euler = (math.radians(-32), math.radians(rot_y), math.radians(rot_y * 0.5))
+        bpy.ops.object.transform_apply(rotation=True, scale=True)
         bpy.ops.object.shade_smooth()
-        vent.data.materials.append(mat_orange)
-        assign_vertex_group(vent, "Torso")
-        mesh_parts.append(vent)
+        tail.data.materials.append(mat_yellow)
+        assign_vertex_group(tail, "Torso")
+        mesh_parts.append(tail)
 
-    # 4. Center Reactor Core Medallion
-    bpy.ops.mesh.primitive_cylinder_add(vertices=16, radius=0.08, depth=0.03, location=(0, 0.14, 0.53))
-    m_core_rim = bpy.context.active_object
-    m_core_rim.name = "Part_CoreRim"
-    m_core_rim.rotation_euler = (math.radians(90), 0, 0)
-    bpy.ops.object.transform_apply(rotation=True)
+    # =========================================================================
+    # C. TORSO & BACKPACK (White Armor + Chest Cyan Core + Blue Backpack)
+    # =========================================================================
+    # 1. Main Torso (Compact sturdy chassis)
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=24, ring_count=16, radius=0.18, location=(0, 0, 0.48))
+    m_torso = bpy.context.active_object
+    m_torso.name = "Part_Torso"
+    m_torso.scale = (0.95, 0.82, 0.95)
+    bpy.ops.object.transform_apply(scale=True)
     bpy.ops.object.shade_smooth()
-    m_core_rim.data.materials.append(mat_dark)
-    assign_vertex_group(m_core_rim, "Torso")
-    mesh_parts.append(m_core_rim)
+    m_torso.data.materials.append(mat_white)
+    assign_vertex_group(m_torso, "Torso")
+    mesh_parts.append(m_torso)
 
-    # Glowing Cyan Core Center
-    bpy.ops.mesh.primitive_cylinder_add(vertices=16, radius=0.06, depth=0.04, location=(0, 0.15, 0.53))
-    m_core_light = bpy.context.active_object
-    m_core_light.name = "Part_CoreLight"
-    m_core_light.rotation_euler = (math.radians(90), 0, 0)
+    # 2. Glowing Cyan Chest Core (Downward-pointing Triangle / Chevron)
+    bpy.ops.mesh.primitive_cylinder_add(vertices=3, radius=0.055, depth=0.03, location=(0, 0.14, 0.51))
+    m_chest_core = bpy.context.active_object
+    m_chest_core.name = "Part_ChestCore"
+    m_chest_core.rotation_euler = (math.radians(90), 0, math.radians(180))
     bpy.ops.object.transform_apply(rotation=True)
-    bpy.ops.object.shade_smooth()
-    m_core_light.data.materials.append(mat_cyan_glow)
-    assign_vertex_group(m_core_light, "Torso")
-    mesh_parts.append(m_core_light)
+    m_chest_core.data.materials.append(mat_cyan_glow)
+    assign_vertex_group(m_chest_core, "Torso")
+    mesh_parts.append(m_chest_core)
 
-    # 5. High-Tech Backpack Generator
-    bpy.ops.mesh.primitive_cube_add(size=1.0, location=(0, -0.18, 0.53))
+    # Chest Core Blue Housing Border
+    bpy.ops.mesh.primitive_cylinder_add(vertices=3, radius=0.070, depth=0.02, location=(0, 0.135, 0.51))
+    m_chest_rim = bpy.context.active_object
+    m_chest_rim.name = "Part_ChestRim"
+    m_chest_rim.rotation_euler = (math.radians(90), 0, math.radians(180))
+    bpy.ops.object.transform_apply(rotation=True)
+    m_chest_rim.data.materials.append(mat_royal_blue)
+    assign_vertex_group(m_chest_rim, "Torso")
+    mesh_parts.append(m_chest_rim)
+
+    # 3. Royal Blue Backpack Unit (Model Sheet Detail Feature)
+    bpy.ops.mesh.primitive_cube_add(size=1.0, location=(0, -0.15, 0.51))
     m_backpack = bpy.context.active_object
     m_backpack.name = "Part_Backpack"
-    m_backpack.scale = (0.26, 0.12, 0.22)
+    m_backpack.scale = (0.19, 0.08, 0.18)
     bpy.ops.object.transform_apply(scale=True)
-    mod_bbev = m_backpack.modifiers.new(name="Bevel", type='BEVEL')
-    mod_bbev.width = 0.025
-    mod_bbev.segments = 2
+    mod_b_bev = m_backpack.modifiers.new(name="Bevel", type='BEVEL')
+    mod_b_bev.width = 0.02
+    mod_b_bev.segments = 2
     bpy.ops.object.modifier_apply(modifier="Bevel")
     bpy.ops.object.shade_smooth()
-    m_backpack.data.materials.append(mat_dark)
+    m_backpack.data.materials.append(mat_royal_blue)
     assign_vertex_group(m_backpack, "Torso")
     mesh_parts.append(m_backpack)
 
-    # Cyan Energy Canister Cell on Backpack
-    bpy.ops.mesh.primitive_cylinder_add(vertices=16, radius=0.05, depth=0.18, location=(0, -0.25, 0.53))
+    # Glowing Cyan Triangular Energy Core on Backpack
+    bpy.ops.mesh.primitive_cylinder_add(vertices=3, radius=0.050, depth=0.02, location=(0, -0.195, 0.51))
     m_back_core = bpy.context.active_object
     m_back_core.name = "Part_BackCore"
-    m_back_core.rotation_euler = (0, math.radians(90), 0)
+    m_back_core.rotation_euler = (math.radians(-90), 0, math.radians(180))
     bpy.ops.object.transform_apply(rotation=True)
-    bpy.ops.object.shade_smooth()
     m_back_core.data.materials.append(mat_cyan_glow)
     assign_vertex_group(m_back_core, "Torso")
     mesh_parts.append(m_back_core)
 
-    # Dual Angled Rocket Thruster Nozzles
-    for side, x in [("L", -0.09), ("R", 0.09)]:
-        bpy.ops.mesh.primitive_cone_add(vertices=16, radius1=0.045, radius2=0.03, depth=0.11, location=(x, -0.21, 0.38))
-        nozzle = bpy.context.active_object
-        nozzle.name = f"Part_Thruster_{side}"
-        nozzle.rotation_euler = (math.radians(160), 0, 0)
-        bpy.ops.object.transform_apply(rotation=True)
-        bpy.ops.object.shade_smooth()
-        nozzle.data.materials.append(mat_orange)
-        assign_vertex_group(nozzle, "Torso")
-        mesh_parts.append(nozzle)
-
-    # Mechanical Pelvis / Waist Bar
-    bpy.ops.mesh.primitive_cube_add(size=1.0, location=(0, 0, 0.37))
-    m_pelvis = bpy.context.active_object
-    m_pelvis.name = "Part_Pelvis"
-    m_pelvis.scale = (0.24, 0.16, 0.08)
-    bpy.ops.object.transform_apply(scale=True)
-    bpy.ops.object.shade_smooth()
-    m_pelvis.data.materials.append(mat_dark)
-    assign_vertex_group(m_pelvis, "Torso")
-    mesh_parts.append(m_pelvis)
-
     # =========================================================================
-    # D. ARTICULATED ARMS & MECH HANDS
+    # D. ARTICULATED ARMS & MECH HANDS (Navy Ball Joints + White Sleeves + Blue Cuffs)
     # =========================================================================
-    for side, x, s_mult in [("L", -0.24, 1), ("R", 0.24, -1)]:
-        # Shoulder Armor Pad (White with Orange Trim)
-        bpy.ops.mesh.primitive_cube_add(size=1.0, location=(x * 1.08, 0, 0.59))
-        sh_pad = bpy.context.active_object
-        sh_pad.name = f"Part_ShoulderPad_{side}"
-        sh_pad.scale = (0.08, 0.14, 0.10)
-        bpy.ops.object.transform_apply(scale=True)
-        bpy.ops.object.shade_smooth()
-        sh_pad.data.materials.append(mat_orange)
-        assign_vertex_group(sh_pad, f"Arm.{side}")
-        mesh_parts.append(sh_pad)
+    for side, x, s_mult in [("L", -0.19, 1), ("R", 0.19, -1)]:
+        # Shoulder Ball Joint (Deep Navy)
+        bpy.ops.mesh.primitive_uv_sphere_add(segments=12, ring_count=8, radius=0.055, location=(x, 0.01, 0.52))
+        shoulder = bpy.context.active_object
+        shoulder.name = f"Part_Shoulder_{side}"
+        shoulder.data.materials.append(mat_navy)
+        assign_vertex_group(shoulder, f"Arm.{side}")
+        mesh_parts.append(shoulder)
 
-        # Upper Arm Strut
-        bpy.ops.mesh.primitive_cylinder_add(vertices=12, radius=0.038, depth=0.16, location=(x * 1.25, 0.02, 0.50))
+        # White Upper Arm Cylinder
+        bpy.ops.mesh.primitive_cylinder_add(vertices=14, radius=0.040, depth=0.14, location=(x * 1.22, 0.02, 0.44))
         u_arm = bpy.context.active_object
         u_arm.name = f"Part_UpperArm_{side}"
-        u_arm.rotation_euler = (math.radians(12), math.radians(s_mult * 15), 0)
+        u_arm.rotation_euler = (math.radians(10), math.radians(s_mult * 14), 0)
         bpy.ops.object.transform_apply(rotation=True)
         bpy.ops.object.shade_smooth()
         u_arm.data.materials.append(mat_white)
         assign_vertex_group(u_arm, f"Arm.{side}")
         mesh_parts.append(u_arm)
 
-        # Elbow Joint Pivot
-        bpy.ops.mesh.primitive_uv_sphere_add(segments=12, ring_count=8, radius=0.045, location=(x * 1.40, 0.04, 0.40))
+        # Elbow Joint Ring (Deep Navy)
+        bpy.ops.mesh.primitive_uv_sphere_add(segments=12, ring_count=8, radius=0.042, location=(x * 1.35, 0.03, 0.35))
         elbow = bpy.context.active_object
         elbow.name = f"Part_Elbow_{side}"
-        elbow.data.materials.append(mat_dark)
+        elbow.data.materials.append(mat_navy)
         assign_vertex_group(elbow, f"Arm.{side}")
         mesh_parts.append(elbow)
 
-        # Forearm Cuff with White Shielding
-        bpy.ops.mesh.primitive_cylinder_add(vertices=14, radius=0.046, depth=0.15, location=(x * 1.55, 0.06, 0.32))
+        # Forearm Sleeve with Royal Blue Trim Cuff
+        bpy.ops.mesh.primitive_cylinder_add(vertices=14, radius=0.044, depth=0.12, location=(x * 1.48, 0.05, 0.28))
         f_arm = bpy.context.active_object
         f_arm.name = f"Part_Forearm_{side}"
-        f_arm.rotation_euler = (math.radians(15), math.radians(s_mult * 12), 0)
+        f_arm.rotation_euler = (math.radians(14), math.radians(s_mult * 10), 0)
         bpy.ops.object.transform_apply(rotation=True)
         bpy.ops.object.shade_smooth()
         f_arm.data.materials.append(mat_white)
         assign_vertex_group(f_arm, f"Hand.{side}")
         mesh_parts.append(f_arm)
 
-        # 3-Finger Robotic Grip Hand (Palm + Clamps)
-        # Palm
-        bpy.ops.mesh.primitive_cube_add(size=1.0, location=(x * 1.68, 0.08, 0.22))
-        palm = bpy.context.active_object
-        palm.name = f"Part_Palm_{side}"
-        palm.scale = (0.06, 0.08, 0.07)
+        # Forearm Royal Blue Trim Band
+        bpy.ops.mesh.primitive_cylinder_add(vertices=14, radius=0.048, depth=0.03, location=(x * 1.46, 0.05, 0.31))
+        arm_trim = bpy.context.active_object
+        arm_trim.name = f"Part_ArmTrim_{side}"
+        arm_trim.rotation_euler = (math.radians(14), math.radians(s_mult * 10), 0)
+        bpy.ops.object.transform_apply(rotation=True)
+        arm_trim.data.materials.append(mat_royal_blue)
+        assign_vertex_group(arm_trim, f"Hand.{side}")
+        mesh_parts.append(arm_trim)
+
+        # Rounded Deep Navy Mech Hand
+        bpy.ops.mesh.primitive_uv_sphere_add(segments=16, ring_count=12, radius=0.055, location=(x * 1.60, 0.07, 0.20))
+        hand = bpy.context.active_object
+        hand.name = f"Part_Hand_{side}"
+        hand.scale = (0.85, 1.15, 1.0)
         bpy.ops.object.transform_apply(scale=True)
         bpy.ops.object.shade_smooth()
-        palm.data.materials.append(mat_dark)
-        assign_vertex_group(palm, f"Hand.{side}")
-        mesh_parts.append(palm)
+        hand.data.materials.append(mat_navy)
+        assign_vertex_group(hand, f"Hand.{side}")
+        mesh_parts.append(hand)
 
-        # Fingers (stylized mitten clamp digits)
-        bpy.ops.mesh.primitive_cube_add(size=1.0, location=(x * 1.70, 0.10, 0.17))
-        fingers = bpy.context.active_object
-        fingers.name = f"Part_Fingers_{side}"
-        fingers.scale = (0.05, 0.07, 0.05)
-        bpy.ops.object.transform_apply(scale=True)
-        fingers.data.materials.append(mat_white)
-        assign_vertex_group(fingers, f"Hand.{side}")
-        mesh_parts.append(fingers)
+        # Back-of-Hand White Armor Plate
+        bpy.ops.mesh.primitive_cylinder_add(vertices=12, radius=0.032, depth=0.015, location=(x * 1.63, 0.04, 0.21))
+        hand_plate = bpy.context.active_object
+        hand_plate.name = f"Part_HandPlate_{side}"
+        hand_plate.rotation_euler = (0, math.radians(90), 0)
+        bpy.ops.object.transform_apply(rotation=True)
+        hand_plate.data.materials.append(mat_white)
+        assign_vertex_group(hand_plate, f"Hand.{side}")
+        mesh_parts.append(hand_plate)
 
     # =========================================================================
-    # E. ARTICULATED LEGS & ANGULAR RUNNER SNEAKERS
+    # E. LEGS & ICONIC BOOTS (Yellow Toe Cap + Blue Heel/Sole + Cyan Ankle Dot)
     # =========================================================================
-    for side, x in [("L", -0.15), ("R", 0.15)]:
-        # Hip Ball Joint
+    for side, x in [("L", -0.13), ("R", 0.13)]:
+        # Hip Ball Joint (Deep Navy)
         bpy.ops.mesh.primitive_uv_sphere_add(segments=12, ring_count=8, radius=0.055, location=(x, 0, 0.32))
         hip = bpy.context.active_object
         hip.name = f"Part_Hip_{side}"
-        hip.data.materials.append(mat_dark)
+        hip.data.materials.append(mat_navy)
         assign_vertex_group(hip, f"Leg.{side}")
         mesh_parts.append(hip)
 
-        # Thigh Strut
-        bpy.ops.mesh.primitive_cylinder_add(vertices=12, radius=0.042, depth=0.14, location=(x, 0, 0.25))
+        # Thigh Armor Shell (White)
+        bpy.ops.mesh.primitive_cylinder_add(vertices=14, radius=0.045, depth=0.12, location=(x, 0, 0.24))
         thigh = bpy.context.active_object
         thigh.name = f"Part_Thigh_{side}"
         bpy.ops.object.shade_smooth()
@@ -419,56 +428,54 @@ def build_new_bot_character():
         assign_vertex_group(thigh, f"Leg.{side}")
         mesh_parts.append(thigh)
 
-        # Knee Shock Absorber Ring
-        bpy.ops.mesh.primitive_cylinder_add(vertices=14, radius=0.048, depth=0.04, location=(x, 0.01, 0.18))
+        # Knee Joint (Deep Navy)
+        bpy.ops.mesh.primitive_uv_sphere_add(segments=12, ring_count=8, radius=0.046, location=(x, 0.01, 0.17))
         knee = bpy.context.active_object
         knee.name = f"Part_Knee_{side}"
-        knee.data.materials.append(mat_orange)
+        knee.data.materials.append(mat_navy)
         assign_vertex_group(knee, f"Leg.{side}")
         mesh_parts.append(knee)
 
-        # Shin Piston
-        bpy.ops.mesh.primitive_cylinder_add(vertices=12, radius=0.038, depth=0.10, location=(x, 0.01, 0.13))
+        # Shin Boot Cuff (White with Blue Base)
+        bpy.ops.mesh.primitive_cylinder_add(vertices=14, radius=0.048, depth=0.10, location=(x, 0.01, 0.11))
         shin = bpy.context.active_object
         shin.name = f"Part_Shin_{side}"
-        shin.data.materials.append(mat_dark)
+        bpy.ops.object.shade_smooth()
+        shin.data.materials.append(mat_white)
         assign_vertex_group(shin, f"Foot.{side}")
         mesh_parts.append(shin)
 
-        # High-Tech Runner Sneaker (White Shell)
-        bpy.ops.mesh.primitive_cube_add(size=1.0, location=(x, 0.03, 0.065))
-        boot = bpy.context.active_object
-        boot.name = f"Part_Boot_{side}"
-        boot.scale = (0.13, 0.22, 0.08)
+        # Front Half: Golden Yellow Rounded Toe Cap (Model Sheet Feature)
+        bpy.ops.mesh.primitive_uv_sphere_add(segments=16, ring_count=12, radius=0.080, location=(x, 0.055, 0.065))
+        toe_cap = bpy.context.active_object
+        toe_cap.name = f"Part_ToeCap_{side}"
+        toe_cap.scale = (0.95, 1.15, 0.75)
         bpy.ops.object.transform_apply(scale=True)
-        mod_bbev = boot.modifiers.new(name="Bevel", type='BEVEL')
-        mod_bbev.width = 0.02
-        mod_bbev.segments = 2
-        bpy.ops.object.modifier_apply(modifier="Bevel")
         bpy.ops.object.shade_smooth()
-        boot.data.materials.append(mat_white)
-        assign_vertex_group(boot, f"Foot.{side}")
-        mesh_parts.append(boot)
+        toe_cap.data.materials.append(mat_yellow)
+        assign_vertex_group(toe_cap, f"Foot.{side}")
+        mesh_parts.append(toe_cap)
 
-        # Dark Magnetic Sole Grip
-        bpy.ops.mesh.primitive_cube_add(size=1.0, location=(x, 0.03, 0.015))
-        sole = bpy.context.active_object
-        sole.name = f"Part_Sole_{side}"
-        sole.scale = (0.14, 0.23, 0.03)
+        # Rear Half: Royal Blue Heel and Sole
+        bpy.ops.mesh.primitive_cylinder_add(vertices=16, radius=0.076, depth=0.045, location=(x, -0.03, 0.025))
+        heel_sole = bpy.context.active_object
+        heel_sole.name = f"Part_HeelSole_{side}"
+        heel_sole.scale = (1.0, 1.35, 1.0)
         bpy.ops.object.transform_apply(scale=True)
-        sole.data.materials.append(mat_dark)
-        assign_vertex_group(sole, f"Foot.{side}")
-        mesh_parts.append(sole)
+        heel_sole.data.materials.append(mat_royal_blue)
+        assign_vertex_group(heel_sole, f"Foot.{side}")
+        mesh_parts.append(heel_sole)
 
-        # Glowing Cyan Heel Energy Strip
-        bpy.ops.mesh.primitive_cube_add(size=1.0, location=(x, -0.09, 0.05))
-        heel_glow = bpy.context.active_object
-        heel_glow.name = f"Part_HeelGlow_{side}"
-        heel_glow.scale = (0.09, 0.02, 0.03)
-        bpy.ops.object.transform_apply(scale=True)
-        heel_glow.data.materials.append(mat_cyan_glow)
-        assign_vertex_group(heel_glow, f"Foot.{side}")
-        mesh_parts.append(heel_glow)
+        # Glowing Cyan Circular Dot on Outer Ankle (Model Sheet Detail Feature)
+        sign_x = -1 if side == "L" else 1
+        bpy.ops.mesh.primitive_cylinder_add(vertices=12, radius=0.018, depth=0.015, location=(x + sign_x * 0.076, 0.01, 0.065))
+        ankle_dot = bpy.context.active_object
+        ankle_dot.name = f"Part_AnkleDot_{side}"
+        ankle_dot.rotation_euler = (0, math.radians(sign_x * 90), 0)
+        bpy.ops.object.transform_apply(rotation=True)
+        ankle_dot.data.materials.append(mat_cyan_glow)
+        assign_vertex_group(ankle_dot, f"Foot.{side}")
+        mesh_parts.append(ankle_dot)
 
     # 4. Join all parts into unified skinned mesh BOT_Character
     bpy.ops.object.select_all(action='DESELECT')
@@ -485,7 +492,7 @@ def build_new_bot_character():
     mod.object = arm_obj
     char_mesh.parent = arm_obj
 
-    # 5. Author Skeletal Animations Tailored to the New Anatomy
+    # 5. Author Skeletal Animations Tailored to Model Sheet Anatomy
     bpy.context.view_layer.objects.active = arm_obj
     bpy.ops.object.mode_set(mode='POSE')
     arm_obj.animation_data_create()
@@ -543,25 +550,25 @@ def build_new_bot_character():
     keyframe_bone(p_torso, 1, loc=(0, 0, 0), rot_deg=(0, 0, 0))
     keyframe_bone(p_head, 1, rot_deg=(0, 0, 0))
     keyframe_bone(p_arm_r, 1, rot_deg=(0, 0, 0))
-    # 25: curious head tilt left, hand raising
+    # Curious head tilt left, hand raising to wave
     keyframe_bone(p_head, 25, rot_deg=(6, -14, 14))
     keyframe_bone(p_ant_l, 25, rot_deg=(0, 0, 16))
     keyframe_bone(p_ant_r, 25, rot_deg=(0, 0, 16))
     keyframe_bone(p_arm_r, 25, rot_deg=(75, 0, -35))
     keyframe_bone(p_hand_r, 25, rot_deg=(0, 0, 25))
-    # 35: hand wave right
+    # Wave right
     keyframe_bone(p_arm_r, 35, rot_deg=(78, 0, -20))
     keyframe_bone(p_hand_r, 35, rot_deg=(0, 0, -30))
-    # 45: hand wave left
+    # Wave left
     keyframe_bone(p_arm_r, 45, rot_deg=(78, 0, -40))
     keyframe_bone(p_hand_r, 45, rot_deg=(0, 0, 30))
-    # 55: head tilt right
+    # Curious look right
     keyframe_bone(p_head, 55, rot_deg=(-4, 14, -12))
     keyframe_bone(p_ant_l, 55, rot_deg=(0, 0, -12))
     keyframe_bone(p_ant_r, 55, rot_deg=(0, 0, -12))
     keyframe_bone(p_arm_r, 55, rot_deg=(40, 0, -15))
     keyframe_bone(p_hand_r, 55, rot_deg=(0, 0, 0))
-    # 90: return
+    # Return to neutral
     keyframe_bone(p_torso, 90, loc=(0, 0, 0), rot_deg=(0, 0, 0))
     keyframe_bone(p_head, 90, rot_deg=(0, 0, 0))
     keyframe_bone(p_ant_l, 90, rot_deg=(0, 0, 0))
@@ -603,7 +610,6 @@ def build_new_bot_character():
         (20, 0.01,  -6,  44, 0.0,   -44, 0.0,   -48,  48)
     ]
     for frame, tz, tyaw, l_rot, l_pz, r_rot, r_pz, al, ar in run_keys:
-        # Energetic athletic forward lean -14 deg
         keyframe_bone(p_torso, frame, loc=(0, 0, tz), rot_deg=(-14, tyaw, -tyaw * 0.6))
         keyframe_bone(p_head, frame, rot_deg=(9, -tyaw * 0.5, 0))
         keyframe_bone(p_ant_l, frame, rot_deg=(-20, 0, -tyaw * 1.5))
@@ -846,12 +852,12 @@ def build_new_bot_character():
 
     bpy.ops.object.mode_set(mode='OBJECT')
 
-    # 6. Save Blender source
+    # 6. Save Blender Source .blend
     blend_path = os.path.join(source_dir, "bot_character.blend")
     bpy.ops.wm.save_as_mainfile(filepath=blend_path)
     print(f"✓ Saved Blender source to: {blend_path}")
 
-    # 7. Export GLB with Armature, Skins, and all 14 Actions
+    # 7. Export GLB with Armature, Skinning, and All 14 Actions
     glb_char_path = os.path.join(char_model_dir, "bot.glb")
     glb_root_path = os.path.join(root_model_dir, "bot.glb")
 
@@ -876,8 +882,8 @@ def build_new_bot_character():
         export_optimize_animation_size=True,
         export_skins=True
     )
-    print(f"✓ Exported new B.O.T GLB with 14 Actions to: {glb_char_path} & {glb_root_path}")
+    print(f"✓ Exported official B.O.T GLB to: {glb_char_path} & {glb_root_path}")
 
 if __name__ == "__main__":
-    build_new_bot_character()
-    print("New B.O.T Character Redesign production complete!")
+    build_model_sheet_bot()
+    print("B.O.T Model Sheet Character production complete!")

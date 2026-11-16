@@ -2,38 +2,30 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.0.0-official-bot] - 2026-11-16
+### Added
+- **Official Character Model Sheet B.O.T Production in Blender 5.2.3 LTS:**
+  - **Head & Helmet:** Large rounded ivory-white ceramic helmet with royal blue top crown cap wrapping over the brow.
+  - **Yellow Sprout Antenna:** Iconic yellow leaf sprout antenna on head crown with curved stem and flared teardrop fin.
+  - **Concentric Cyan Ear Canisters:** Yellow outer disc rim, royal blue housing, glowing cyan concentric donut ring, and navy center hub.
+  - **Visor & LED Eyes:** Deep gloss obsidian visor screen with large expressive cyan LED capsule pill eyes.
+  - **Yellow Adventure Scarf:** 3D yellow neckerchief wrap around the neck, front triangular bib with blue emblem inlay, and dual dynamic scarf tails fluttering over shoulders.
+  - **Torso & Backpack:** Compact ivory chassis, glowing cyan triangular chest energy core in blue bezel, and royal blue backpack unit with glowing cyan downward-pointing energy triangle.
+  - **Limbs & Mitten Hands:** Deep navy shoulder/elbow/hip ball joints, white sleeve armor shells, royal blue forearm trim, and deep navy chibi mech mitten hands with white back-of-hand plates.
+  - **Boots & Soles:** Golden yellow rounded front toe caps, royal blue heels and soles, and glowing cyan circular ankle dots.
+- **Armature & Rigging:**
+  - 13 deformation bones tailored to the exact model sheet proportions.
+- **14 Rebuilt Animation Actions in Blender 5.2.3:**
+  - `Idle`, `Idle_Secondary`, `Walk`, `Run`, `Jump_Start`, `Jump_Loop`, `Fall`, `Landing`, `Turn_Left`, `Turn_Right`, `Collect`, `Interact`, `Victory`, `Respawn`.
+- **Godot Integration:**
+  - Integrated into `scenes/player/player.tscn`.
+  - Both automated test suites pass 100%: `scripts/tests/test_character_animation.gd` and `scripts/tests/test_gameplay.gd`.
+- **Web Export:**
+  - Updated release Web build in `web-build/` deployed to GitHub Pages.
+
 ## [3.5.0-bot-redesign] - 2026-11-16
 ### Changed
-- **Replaced Egg-Shaped B.O.T with Brand-New Silhouette ("The Modular Retro-Chibi Explorer"):**
-  - **Head & Helmet:** Distinct chamfered TV-monitor helmet (beveled cube chassis, separated from torso by a visible mechanical neck collar).
-  - **Face & Visor:** Deep gloss obsidian visor screen with large, expressive tilted cyan LED pill eyes.
-  - **Ears & Audio:** Left/right audio headphone canisters with sunset-orange trim rings and cyan sensor dots.
-  - **Antennas:** Dual angled communication stems with orange accent rings and bright cyan beacon orbs.
-  - **Torso & Chassis:** Tapered trapezoid chest chassis (broad at shoulders, compact at waist) with center glowing cyan reactor core medallion, orange side intake vents, and dark waist bar.
-  - **Backpack Generator:** Compact rectangular power generator with dual angled rocket thrusters and horizontal cyan fuel cylinder.
-  - **Segmented Limbs:** Fully articulated arms with orange shoulder pads, white upper arm struts, titanium elbow pivot spheres, white forearm cuffs, and 3-finger mech grip hands.
-  - **Legs & Sneaker Boots:** Mechanical hip sockets, thigh cylinders, knee shock-absorber rings, dark shin pistons, and angular high-tech runner sneakers with dark magnetic soles and glowing cyan heel strips.
-- **Armature & Rigging (`BOT_Armature`):**
-  - Rebuilt 13-bone skeletal rig specifically configured for the new head/torso/limb proportions.
-  - Skinning bound via vertex groups with zero joint tearing or rubbery deformation.
-- **14 Rebuilt Animation Actions in Blender 5.2.3:**
-  - `Idle`: Smooth breathing bob, head micro-tilts, antenna flex.
-  - `Idle_Secondary`: Inquisitive head tilt, cheerful double-hand wave to player, observant look-around.
-  - `Walk`: Ground-contact mechanical strides, arm counter-swings, torso bobbing.
-  - `Run`: Athletic forward lean (-14°), high-knee stride, wide arm pumps, trailing antennas.
-  - `Jump_Start`: Dynamic anticipation crouch into explosive launch takeoff.
-  - `Jump_Loop`: Airborne glide pose with boots tucked and thrusters angled down.
-  - `Fall`: Reactive balance-catching arm flail and dangling legs.
-  - `Landing`: Heavy impact squash compression (-0.13m) and springy rebound.
-  - `Turn_Left` / `Turn_Right`: Rapid banking twist and head anticipation turn.
-  - `Collect`: Joyful celebration hop, double fist pump, proud chest puff.
-  - `Interact`: Deliberate forward step, right hand button press gesture with head nod.
-  - `Victory`: 360° pirouette spin, double celebratory hops, side-to-side torso sway, hero freeze pose waving to player.
-  - `Respawn`: Reboot crouch, head snap, dust shake-off, energetic recovery.
-- **Godot Collision Tuning:**
-  - Tightened player `CapsuleShape3D` radius from 0.38m to 0.34m in `scenes/player/player.tscn` to perfectly conform to B.O.T's new athletic silhouette.
-- **Web Export:**
-  - Exported updated release Web build to `web-build/`.
+- Initial modular silhouette exploration and chassis testing.
 
 ## [3.0.0-character-animation] - 2026-11-16
 ### Added
