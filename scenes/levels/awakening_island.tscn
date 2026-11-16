@@ -8,14 +8,27 @@
 [ext_resource type="PackedScene" path="res://scenes/interactive/exit_portal.tscn" id="6_portal"]
 [ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="7_hud"]
 [ext_resource type="Script" path="res://scripts/levels/game_manager.gd" id="8_gm"]
-[ext_resource type="PackedScene" path="res://assets/models/floating_island.glb" id="9_island_model"]
-[ext_resource type="AudioStream" path="res://assets/audio/ambient.wav" id="10_ambient"]
+[ext_resource type="PackedScene" path="res://assets/models/environment/island_awakening.glb" id="9_isl_awake"]
+[ext_resource type="PackedScene" path="res://assets/models/environment/island_sanctuary.glb" id="10_isl_sanc"]
+[ext_resource type="PackedScene" path="res://assets/models/environment/island_portal.glb" id="11_isl_port"]
+[ext_resource type="PackedScene" path="res://assets/models/environment/stepping_stone.glb" id="12_step_model"]
+[ext_resource type="PackedScene" path="res://assets/models/props/tree_stylized.glb" id="13_tree"]
+[ext_resource type="PackedScene" path="res://assets/models/props/bush_stylized.glb" id="14_bush"]
+[ext_resource type="PackedScene" path="res://assets/models/props/flower_cluster.glb" id="15_flower"]
+[ext_resource type="PackedScene" path="res://assets/models/props/mushrooms_stylized.glb" id="16_mush"]
+[ext_resource type="PackedScene" path="res://assets/models/props/rock_boulder.glb" id="17_rock"]
+[ext_resource type="PackedScene" path="res://assets/models/props/crystal_cluster.glb" id="18_crys"]
+[ext_resource type="PackedScene" path="res://assets/models/props/ancient_pillar.glb" id="19_pillar"]
+[ext_resource type="PackedScene" path="res://assets/models/props/lantern_pedestal.glb" id="20_lantern"]
+[ext_resource type="PackedScene" path="res://assets/models/environment/distant_island.glb" id="21_dist_isl"]
+[ext_resource type="PackedScene" path="res://assets/models/environment/cloud_stylized.glb" id="22_cloud"]
+[ext_resource type="AudioStream" path="res://assets/audio/ambient.wav" id="23_ambient"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
-sky_top_color = Color(0.35, 0.65, 0.95, 1)
-sky_horizon_color = Color(0.72, 0.85, 0.95, 1)
-ground_bottom_color = Color(0.18, 0.22, 0.3, 1)
-ground_horizon_color = Color(0.55, 0.72, 0.85, 1)
+sky_top_color = Color(0.24, 0.48, 0.88, 1)
+sky_horizon_color = Color(0.86, 0.82, 0.88, 1)
+ground_bottom_color = Color(0.12, 0.15, 0.22, 1)
+ground_horizon_color = Color(0.65, 0.70, 0.80, 1)
 
 [sub_resource type="Sky" id="Sky_env"]
 sky_material = SubResource("ProceduralSkyMaterial_sky")
@@ -24,37 +37,20 @@ sky_material = SubResource("ProceduralSkyMaterial_sky")
 background_mode = 2
 sky = SubResource("Sky_env")
 ambient_light_source = 2
-ambient_light_color = Color(0.85, 0.9, 0.98, 1)
-ambient_light_energy = 0.6
-tonemap_mode = 2
+ambient_light_color = Color(0.68, 0.72, 0.82, 1)
+ambient_light_energy = 0.5
+tonemap_mode = 3
+glow_enabled = true
+glow_intensity = 0.6
+glow_bloom = 0.15
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_island"]
 height = 1.0
 radius = 7.0
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_step"]
-height = 0.5
+height = 0.45
 radius = 1.35
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_step"]
-albedo_color = Color(0.48, 0.62, 0.45, 1)
-roughness = 0.75
-
-[sub_resource type="CylinderMesh" id="CylinderMesh_step"]
-material = SubResource("StandardMaterial3D_step")
-top_radius = 1.35
-bottom_radius = 1.15
-height = 0.5
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_crystal_prop"]
-albedo_color = Color(0.2, 0.9, 1, 1)
-emission_enabled = true
-emission = Color(0, 0.85, 1, 1)
-emission_energy_multiplier = 2.0
-
-[sub_resource type="BoxMesh" id="BoxMesh_crystal"]
-material = SubResource("StandardMaterial3D_crystal_prop")
-size = Vector3(0.3, 0.9, 0.3)
 
 [node name="AwakeningIsland" type="Node3D"]
 
@@ -62,13 +58,15 @@ size = Vector3(0.3, 0.9, 0.3)
 environment = SubResource("Environment_main")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.866025, -0.353553, 0.353553, 0, 0.707107, 0.707107, -0.5, -0.612372, 0.612372, 0, 20, 0)
-light_color = Color(1, 0.97, 0.92, 1)
-light_energy = 1.2
+transform = Transform3D(0.819152, -0.40558, 0.40558, 0, 0.707107, 0.707107, -0.573576, -0.579228, 0.579228, 0, 25, 0)
+light_color = Color(1, 0.96, 0.88, 1)
+light_energy = 1.15
 shadow_enabled = true
+shadow_bias = 0.04
+directional_shadow_max_distance = 70.0
 
 [node name="AmbientAudio" type="AudioStreamPlayer" parent="."]
-stream = ExtResource("10_ambient")
+stream = ExtResource("23_ambient")
 volume_db = -8.0
 autoplay = true
 
@@ -80,17 +78,42 @@ autoplay = true
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 shape = SubResource("CylinderShape3D_island")
 
-[node name="IslandModel" parent="Environment/Island1_Awakening" instance=ExtResource("9_island_model")]
+[node name="IslandModel" parent="Environment/Island1_Awakening" instance=ExtResource("9_isl_awake")]
 
 [node name="Props" type="Node3D" parent="Environment/Island1_Awakening"]
 
-[node name="Crystal1" type="MeshInstance3D" parent="Environment/Island1_Awakening/Props"]
-transform = Transform3D(0.9, 0, 0.4, 0.3, 0.9, 0, -0.3, 0.4, 0.9, -3.5, 0.4, -2.0)
-mesh = SubResource("BoxMesh_crystal")
+[node name="Tree1" parent="Environment/Island1_Awakening/Props" instance=ExtResource("13_tree")]
+transform = Transform3D(1.1, 0, 0, 0, 1.1, 0, 0, 0, 1.1, -4.5, 0, -2.2)
 
-[node name="Crystal2" type="MeshInstance3D" parent="Environment/Island1_Awakening/Props"]
-transform = Transform3D(0.7, 0, -0.7, 0, 1, 0, 0.7, 0, 0.7, 4.0, 0.4, 1.5)
-mesh = SubResource("BoxMesh_crystal")
+[node name="Tree2" parent="Environment/Island1_Awakening/Props" instance=ExtResource("13_tree")]
+transform = Transform3D(0.95, 0, 0.3, 0, 1, 0, -0.3, 0, 0.95, 4.8, 0, -1.8)
+
+[node name="Bush1" parent="Environment/Island1_Awakening/Props" instance=ExtResource("14_bush")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.8, 0, -1.2)
+
+[node name="Bush2" parent="Environment/Island1_Awakening/Props" instance=ExtResource("14_bush")]
+transform = Transform3D(0.85, 0, 0, 0, 0.85, 0, 0, 0, 0.85, 4.2, 0, -0.8)
+
+[node name="Flowers1" parent="Environment/Island1_Awakening/Props" instance=ExtResource("15_flower")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4, 0, -1.8)
+
+[node name="Flowers2" parent="Environment/Island1_Awakening/Props" instance=ExtResource("15_flower")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.2, 0, 1.6)
+
+[node name="Rock1" parent="Environment/Island1_Awakening/Props" instance=ExtResource("17_rock")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.2, 0, 2.5)
+
+[node name="Rock2" parent="Environment/Island1_Awakening/Props" instance=ExtResource("17_rock")]
+transform = Transform3D(0.7, 0, -0.7, 0, 1, 0, 0.7, 0, 0.7, 4.6, 0, 2.2)
+
+[node name="Lantern1" parent="Environment/Island1_Awakening/Props" instance=ExtResource("20_lantern")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.8, 0, 4.2)
+
+[node name="Mushrooms1" parent="Environment/Island1_Awakening/Props" instance=ExtResource("16_mush")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2, 0, 4.5)
+
+[node name="Crystal1" parent="Environment/Island1_Awakening/Props" instance=ExtResource("18_crys")]
+transform = Transform3D(0.9, 0, 0.4, 0, 1, 0, -0.4, 0, 0.9, -5.2, 0, 0.5)
 
 [node name="JumpChallengeSteps" type="Node3D" parent="Environment"]
 
@@ -100,8 +123,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 8.5)
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Environment/JumpChallengeSteps/Step1"]
 shape = SubResource("CylinderShape3D_step")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Environment/JumpChallengeSteps/Step1"]
-mesh = SubResource("CylinderMesh_step")
+[node name="Model" parent="Environment/JumpChallengeSteps/Step1" instance=ExtResource("12_step_model")]
 
 [node name="Step2" type="StaticBody3D" parent="Environment/JumpChallengeSteps"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.6, 1.1, 11.5)
@@ -109,8 +131,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.6, 1.1, 11.5)
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Environment/JumpChallengeSteps/Step2"]
 shape = SubResource("CylinderShape3D_step")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Environment/JumpChallengeSteps/Step2"]
-mesh = SubResource("CylinderMesh_step")
+[node name="Model" parent="Environment/JumpChallengeSteps/Step2" instance=ExtResource("12_step_model")]
 
 [node name="Step3" type="StaticBody3D" parent="Environment/JumpChallengeSteps"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 14.5)
@@ -118,8 +139,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 14.5)
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Environment/JumpChallengeSteps/Step3"]
 shape = SubResource("CylinderShape3D_step")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Environment/JumpChallengeSteps/Step3"]
-mesh = SubResource("CylinderMesh_step")
+[node name="Model" parent="Environment/JumpChallengeSteps/Step3" instance=ExtResource("12_step_model")]
 
 [node name="Step4" type="StaticBody3D" parent="Environment/JumpChallengeSteps"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.6, 2.5, 17.5)
@@ -127,8 +147,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.6, 2.5, 17.5)
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Environment/JumpChallengeSteps/Step4"]
 shape = SubResource("CylinderShape3D_step")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Environment/JumpChallengeSteps/Step4"]
-mesh = SubResource("CylinderMesh_step")
+[node name="Model" parent="Environment/JumpChallengeSteps/Step4" instance=ExtResource("12_step_model")]
 
 [node name="Island2_Sanctuary" type="StaticBody3D" parent="Environment"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.0, 26.0)
@@ -137,27 +156,105 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.0, 26.0)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 shape = SubResource("CylinderShape3D_island")
 
-[node name="IslandModel" parent="Environment/Island2_Sanctuary" instance=ExtResource("9_island_model")]
+[node name="IslandModel" parent="Environment/Island2_Sanctuary" instance=ExtResource("10_isl_sanc")]
+
+[node name="Props" type="Node3D" parent="Environment/Island2_Sanctuary"]
+
+[node name="Pillar1" parent="Environment/Island2_Sanctuary/Props" instance=ExtResource("19_pillar")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 0, -2.5)
+
+[node name="Pillar2" parent="Environment/Island2_Sanctuary/Props" instance=ExtResource("19_pillar")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 0, -2.5)
+
+[node name="Pillar3" parent="Environment/Island2_Sanctuary/Props" instance=ExtResource("19_pillar")]
+transform = Transform3D(0.8, 0, 0, 0, 0.8, 0, 0, 0, 0.8, -4.8, 0, 2.5)
+
+[node name="Tree1" parent="Environment/Island2_Sanctuary/Props" instance=ExtResource("13_tree")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.8, 0, 1.5)
+
+[node name="Bush1" parent="Environment/Island2_Sanctuary/Props" instance=ExtResource("14_bush")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.8, 0, 1.8)
+
+[node name="Flowers1" parent="Environment/Island2_Sanctuary/Props" instance=ExtResource("15_flower")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.8, 0, -3.5)
+
+[node name="Flowers2" parent="Environment/Island2_Sanctuary/Props" instance=ExtResource("15_flower")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8, 0, -3.5)
+
+[node name="Crystal1" parent="Environment/Island2_Sanctuary/Props" instance=ExtResource("18_crys")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.2, 0, 0)
+
+[node name="Crystal2" parent="Environment/Island2_Sanctuary/Props" instance=ExtResource("18_crys")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.2, 0, 0)
+
+[node name="Lantern1" parent="Environment/Island2_Sanctuary/Props" instance=ExtResource("20_lantern")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.8, 0, 4.5)
+
+[node name="Lantern2" parent="Environment/Island2_Sanctuary/Props" instance=ExtResource("20_lantern")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.8, 0, 4.5)
 
 [node name="Island3_Exit" type="StaticBody3D" parent="Environment"]
-transform = Transform3D(0.7, 0, 0, 0, 0.7, 0, 0, 0, 0.7, 0, 4.0, 47.0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.0, 47.0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Environment/Island3_Exit"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 shape = SubResource("CylinderShape3D_island")
 
-[node name="IslandModel" parent="Environment/Island3_Exit" instance=ExtResource("9_island_model")]
+[node name="IslandModel" parent="Environment/Island3_Exit" instance=ExtResource("11_isl_port")]
+
+[node name="Props" type="Node3D" parent="Environment/Island3_Exit"]
+
+[node name="Pillar1" parent="Environment/Island3_Exit/Props" instance=ExtResource("19_pillar")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.5, 0, 1.8)
+
+[node name="Pillar2" parent="Environment/Island3_Exit/Props" instance=ExtResource("19_pillar")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5, 0, 1.8)
+
+[node name="Crystal1" parent="Environment/Island3_Exit/Props" instance=ExtResource("18_crys")]
+transform = Transform3D(1.2, 0, 0, 0, 1.2, 0, 0, 0, 1.2, -4.0, 0, -0.5)
+
+[node name="Crystal2" parent="Environment/Island3_Exit/Props" instance=ExtResource("18_crys")]
+transform = Transform3D(1.2, 0, 0, 0, 1.2, 0, 0, 0, 1.2, 4.0, 0, -0.5)
+
+[node name="Lantern1" parent="Environment/Island3_Exit/Props" instance=ExtResource("20_lantern")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4, 0, -2.0)
+
+[node name="Lantern2" parent="Environment/Island3_Exit/Props" instance=ExtResource("20_lantern")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4, 0, -2.0)
+
+[node name="VistasAndClouds" type="Node3D" parent="Environment"]
+
+[node name="DistantIsland1" parent="Environment/VistasAndClouds" instance=ExtResource("21_dist_isl")]
+transform = Transform3D(1.8, 0, 0, 0, 1.8, 0, 0, 0, 1.8, -36, 12, 10)
+
+[node name="DistantIsland2" parent="Environment/VistasAndClouds" instance=ExtResource("21_dist_isl")]
+transform = Transform3D(1.4, 0, 0.6, 0, 1.5, 0, -0.6, 0, 1.4, 38, 8, 32)
+
+[node name="DistantIsland3" parent="Environment/VistasAndClouds" instance=ExtResource("21_dist_isl")]
+transform = Transform3D(1.2, 0, 0, 0, 1.2, 0, 0, 0, 1.2, -28, -6, 48)
+
+[node name="Cloud1" parent="Environment/VistasAndClouds" instance=ExtResource("22_cloud")]
+transform = Transform3D(2.5, 0, 0, 0, 2, 0, 0, 0, 2.5, -16, -4, 15)
+
+[node name="Cloud2" parent="Environment/VistasAndClouds" instance=ExtResource("22_cloud")]
+transform = Transform3D(3, 0, 0, 0, 2.2, 0, 0, 0, 3, 20, -5, 28)
+
+[node name="Cloud3" parent="Environment/VistasAndClouds" instance=ExtResource("22_cloud")]
+transform = Transform3D(2.2, 0, 0, 0, 1.8, 0, 0, 0, 2.2, 0, -8, 52)
+
+[node name="Cloud4" parent="Environment/VistasAndClouds" instance=ExtResource("22_cloud")]
+transform = Transform3D(3.5, 0, 0, 0, 2.5, 0, 0, 0, 3.5, -25, 18, 30)
 
 [node name="Collectibles" type="Node3D" parent="."]
 
 [node name="EnergyFragment1" parent="Collectibles" instance=ExtResource("3_frag")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.0, 23.0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.2, 23.5)
 
 [node name="EnergyFragment2" parent="Collectibles" instance=ExtResource("3_frag")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2, 4.0, 27.0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2, 4.2, 27.0)
 
 [node name="EnergyFragment3" parent="Collectibles" instance=ExtResource("3_frag")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2, 4.0, 27.0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2, 4.2, 27.0)
 
 [node name="Interactive" type="Node3D" parent="."]
 

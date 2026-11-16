@@ -2,20 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.0.0-prototype] - 2026-11-16
+## [2.0.0-visual-overhaul] - 2026-11-16
 ### Added
-- Complete playable prototype of The Awakening Island.
-- B.O.T player character model (`bot.glb`) with cyan emissive LED visor and procedural animation.
-- Responsive 3D CharacterBody3D player controller with acceleration, air control, jump, landing squash-and-stretch, and fall recovery.
-- Smooth third-person SpringArm3D orbit camera controller with mouse drag and touch swipe support.
-- 3 floating Energy Fragments with sinusoidal bobbing, continuous rotation, collection chimes, and HUD counter.
-- Reusable `Interactable` system with proximity detector.
-- Ancient Switch Pedestal with button depress animation, color transition, and audio feedback.
-- Energy Bridge with cascading sequential plank extension and dynamic collision activation.
-- Exit Portal with swirling cosmic vortex, unlocking logic, and level completion trigger.
-- Complete original synthesized audio suite (jump, land, collect, switch, bridge, portal, victory, ambient loop).
-- Responsive HUD with fragment tracker, objective guide, contextual interaction prompt, and victory modal.
-- Mobile touch controls (Virtual Joystick, Jump button, Camera drag area).
-- Single-threaded Web export configured in `export_presets.cfg` and verified in `web-build/`.
-- GitHub Actions deployment workflow `.github/workflows/deploy.yml` for automated GitHub Pages publishing.
-- Automated gameplay verification test runner (`scripts/tests/test_gameplay.gd`).
+- **Complete Blender 3D Asset Pipeline:**
+  - `assets/blender/source/`: source `.blend` files (`bot_character.blend`, `environment_islands.blend`, `environment_props.blend`, `interactive_props.blend`).
+  - `assets/blender/scripts/`: modular automated generation scripts for Blender 5.2.3 LTS.
+  - Organized model directories: `characters/`, `environment/`, `props/`, `architecture/`, `collectibles/`.
+- **Character Upgrade (B.O.T):**
+  - High-appeal silhouette with porcelain-ceramic material, dark curved reflective visor, expressive tilted cyan eyes, jetpack battery pack with dual golden thrusters, articulated shoulder/mitten arms, and magnetic titanium boots with heel glow.
+- **Environment Overhaul:**
+  - Awakening Island: sculpted grass plateau, cobblestone spawn path, grass fringe rim, stratified sandstone cliffs, floating rock roots.
+  - Sanctuary Island: circular ancient stone dais with cyan glowing runic inlays.
+  - Portal Island: octagonal ancient temple platform with rune steps.
+  - Stepping Stones: floating ancient rune slabs with moss tops and levitation crystals underneath.
+  - Vistas: distant floating islands and fluffy 3D stylized clouds.
+- **Vegetation & Props:**
+  - Low-poly canopy trees, rounded bushes, multi-colored flower clusters (pink, blue, yellow), glowing mushrooms, chiseled boulders, glowing crystal clusters, ancient ruin pillars, and celestial lantern posts.
+- **Lighting & Color Grading:**
+  - ACES filmic tone mapping to eliminate washed-out whites and deliver vibrant greens and warm stone.
+  - Deep azure sky with peach horizon gradient.
+  - Calibrated directional sunlight and ambient lighting.
+- **Visual Effects:**
+  - Jump and landing dust puffs via `CPUParticles3D` on player feet.
+  - Sparkling collection burst on Energy Fragments.
+  - Portal swirling energy particles on unlock.
+- **Camera Tuning:**
+  - Shortened camera arm from 4.8m to 3.8m for clearer B.O.T framing and improved platforming readability.
+- **Web Build:**
+  - Exported updated release Web build with all new assets into `web-build/`.

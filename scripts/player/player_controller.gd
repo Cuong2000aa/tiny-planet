@@ -23,7 +23,7 @@ var _is_victory: bool = false
 @onready var sfx_jump: AudioStreamPlayer3D = $SFXJump
 @onready var sfx_land: AudioStreamPlayer3D = $SFXLand
 @onready var interaction_detector: Area3D = $InteractionDetector
-@onready var dust_particles: GPUParticles3D = $DustParticles if has_node("DustParticles") else null
+@onready var dust_particles: Node3D = get_node_or_null("DustParticles")
 
 # Interaction tracking
 var _nearby_interactables: Array[Interactable] = []

@@ -1,11 +1,23 @@
 [gd_scene format=3 uid="uid://f4y9c3e3a4b5c"]
 
 [ext_resource type="Script" path="res://scripts/collectibles/energy_fragment.gd" id="1_ef"]
-[ext_resource type="PackedScene" path="res://assets/models/energy_fragment.glb" id="2_ef_model"]
+[ext_resource type="PackedScene" path="res://assets/models/collectibles/energy_fragment.glb" id="2_ef_model"]
 [ext_resource type="AudioStream" path="res://assets/audio/collect.wav" id="3_sfx_collect"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_col"]
 radius = 0.85
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sparkle"]
+shading_mode = 0
+albedo_color = Color(0.2, 0.95, 1, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_sparkle"]
+material = SubResource("StandardMaterial3D_sparkle")
+size = Vector3(0.08, 0.08, 0.08)
+
+[sub_resource type="Curve" id="Curve_sparkle"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), -2.2, 0.0, 0, 0]
+point_count = 2
 
 [node name="EnergyFragment" type="Area3D" groups=["energy_fragments"]]
 collision_layer = 8
@@ -20,9 +32,24 @@ shape = SubResource("SphereShape3D_col")
 
 [node name="EnergyFragmentModel" parent="VisualRoot" instance=ExtResource("2_ef_model")]
 
+[node name="CollectParticles" type="CPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+emitting = false
+amount = 20
+lifetime = 0.5
+one_shot = true
+explosiveness = 0.95
+mesh = SubResource("BoxMesh_sparkle")
+direction = Vector3(0, 1, 0)
+spread = 180.0
+gravity = Vector3(0, -1.0, 0)
+initial_velocity_min = 2.0
+initial_velocity_max = 4.2
+scale_amount_curve = SubResource("Curve_sparkle")
+
 [node name="OmniLight3D" type="OmniLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
-light_color = Color(0.15, 0.9, 1, 1)
+light_color = Color(0.15, 0.92, 1, 1)
 light_energy = 2.5
 omni_range = 3.5
 

@@ -3,20 +3,29 @@
 [ext_resource type="Script" path="res://scripts/interactive/energy_bridge.gd" id="1_eb"]
 [ext_resource type="AudioStream" path="res://assets/audio/bridge.wav" id="2_sfx_bridge"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_plank"]
-albedo_color = Color(0.1, 0.85, 0.95, 0.85)
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_energy"]
+albedo_color = Color(0.05, 0.90, 1.0, 0.9)
 metallic = 0.2
 roughness = 0.1
 emission_enabled = true
-emission = Color(0, 0.9, 1, 1)
-emission_energy_multiplier = 2.5
+emission = Color(0, 0.95, 1, 1)
+emission_energy_multiplier = 3.0
 
-[sub_resource type="BoxMesh" id="BoxMesh_plank"]
-material = SubResource("StandardMaterial3D_plank")
-size = Vector3(2.4, 0.25, 1.2)
+[sub_resource type="BoxMesh" id="BoxMesh_energy"]
+material = SubResource("StandardMaterial3D_energy")
+size = Vector3(2.2, 0.18, 1.1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_frame"]
+albedo_color = Color(0.95, 0.82, 0.25, 1)
+metallic = 0.85
+roughness = 0.25
+
+[sub_resource type="BoxMesh" id="BoxMesh_frame"]
+material = SubResource("StandardMaterial3D_frame")
+size = Vector3(2.35, 0.12, 1.25)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_plank"]
-size = Vector3(2.4, 0.25, 1.2)
+size = Vector3(2.4, 0.35, 1.3)
 
 [node name="EnergyBridge" type="Node3D"]
 script = ExtResource("1_eb")
@@ -25,7 +34,11 @@ script = ExtResource("1_eb")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1.5)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Plank1"]
-mesh = SubResource("BoxMesh_plank")
+mesh = SubResource("BoxMesh_energy")
+
+[node name="Frame" type="MeshInstance3D" parent="Plank1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.04, 0)
+mesh = SubResource("BoxMesh_frame")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Plank1"]
 shape = SubResource("BoxShape3D_plank")
@@ -34,7 +47,11 @@ shape = SubResource("BoxShape3D_plank")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, 3.2)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Plank2"]
-mesh = SubResource("BoxMesh_plank")
+mesh = SubResource("BoxMesh_energy")
+
+[node name="Frame" type="MeshInstance3D" parent="Plank2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.04, 0)
+mesh = SubResource("BoxMesh_frame")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Plank2"]
 shape = SubResource("BoxShape3D_plank")
@@ -43,7 +60,11 @@ shape = SubResource("BoxShape3D_plank")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 4.9)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Plank3"]
-mesh = SubResource("BoxMesh_plank")
+mesh = SubResource("BoxMesh_energy")
+
+[node name="Frame" type="MeshInstance3D" parent="Plank3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.04, 0)
+mesh = SubResource("BoxMesh_frame")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Plank3"]
 shape = SubResource("BoxShape3D_plank")
@@ -52,7 +73,11 @@ shape = SubResource("BoxShape3D_plank")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 6.6)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Plank4"]
-mesh = SubResource("BoxMesh_plank")
+mesh = SubResource("BoxMesh_energy")
+
+[node name="Frame" type="MeshInstance3D" parent="Plank4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.04, 0)
+mesh = SubResource("BoxMesh_frame")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Plank4"]
 shape = SubResource("BoxShape3D_plank")
@@ -61,7 +86,11 @@ shape = SubResource("BoxShape3D_plank")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6, 8.3)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Plank5"]
-mesh = SubResource("BoxMesh_plank")
+mesh = SubResource("BoxMesh_energy")
+
+[node name="Frame" type="MeshInstance3D" parent="Plank5"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.04, 0)
+mesh = SubResource("BoxMesh_frame")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Plank5"]
 shape = SubResource("BoxShape3D_plank")

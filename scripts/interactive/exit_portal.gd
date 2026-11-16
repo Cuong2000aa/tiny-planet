@@ -8,7 +8,7 @@ signal portal_entered
 @onready var portal_light: OmniLight3D = get_node_or_null("OmniLight3D")
 @onready var sfx_portal: AudioStreamPlayer3D = get_node_or_null("AudioStreamPlayer3D")
 @onready var sfx_victory: AudioStreamPlayer3D = get_node_or_null("VictoryAudio")
-@onready var particles: GPUParticles3D = get_node_or_null("PortalParticles")
+@onready var particles: Node3D = get_node_or_null("PortalParticles")
 
 var _rotation_speed: float = 1.0
 

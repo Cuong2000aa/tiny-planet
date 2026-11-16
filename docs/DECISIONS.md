@@ -19,3 +19,13 @@
 - **Context:** The game is Web-first, accessible on both desktop and mobile devices.
 - **Decision:** Implement transparent touch controls (virtual joystick and action buttons) that simulate Godot standard `InputEventAction` events or seamlessly integrate with the input system.
 - **Consequences:** Unified player controller code handles both desktop and mobile inputs identically.
+
+## ADR 005: Blender Source Organization & Asset Pipeline (Phase 2)
+- **Context:** Phase 2 requires professional stylized 3D assets rather than primitive engine shapes, with persistent editable source files and optimized GLBs for Web export.
+- **Decision:** Structure pipeline into `assets/blender/source/` (keeping source `.blend` files), `assets/blender/scripts/` (reproducible Python generator scripts), and categorized GLB destinations (`assets/models/{characters,environment,props,architecture,collectibles}/`), while updating root compatibility links. Added `.gdignore` to `assets/blender/` to prevent Godot from attempting direct blend imports.
+- **Consequences:** Clean separation of art sources and runtime engine assets; reproducible, automated asset generation; zero broken dependencies in Godot.
+
+## ADR 006: ACES Tone Mapping & CPUParticles3D for Compatibility Renderer
+- **Context:** The prototype suffered from washed-out white terrain under Compatibility lighting, and GPUParticles3D can trigger WebGL compute shader incompatibilities on mobile Safari.
+- **Decision:** Adopt ACES Tone Mapping (`tonemap_mode = 3`) with calibrated ambient lighting (0.5 energy) and replace runtime particle bursts with `CPUParticles3D`.
+- **Consequences:** Eliminates washed-out surfaces, produces rich vibrant greens and warm terracotta rocks, and ensures guaranteed cross-browser particle rendering without compute shader overhead.

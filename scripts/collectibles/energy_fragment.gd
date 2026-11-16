@@ -13,7 +13,7 @@ var _is_collected: bool = false
 
 @onready var visual_root: Node3D = get_node_or_null("VisualRoot")
 @onready var sfx_collect: AudioStreamPlayer3D = get_node_or_null("AudioStreamPlayer3D")
-@onready var particles: GPUParticles3D = get_node_or_null("CollectParticles")
+@onready var particles: Node3D = get_node_or_null("CollectParticles")
 
 func _ready() -> void:
 	_base_y = position.y

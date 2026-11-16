@@ -1,12 +1,24 @@
 [gd_scene format=3 uid="uid://p7y9c6p6a7b8c"]
 
 [ext_resource type="Script" path="res://scripts/interactive/exit_portal.gd" id="1_ep"]
-[ext_resource type="PackedScene" path="res://assets/models/portal_gate.glb" id="2_ep_model"]
+[ext_resource type="PackedScene" path="res://assets/models/architecture/portal_gate.glb" id="2_ep_model"]
 [ext_resource type="AudioStream" path="res://assets/audio/portal.wav" id="3_sfx_portal"]
 [ext_resource type="AudioStream" path="res://assets/audio/victory.wav" id="4_sfx_victory"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_portal"]
-size = Vector3(2.5, 3.0, 1.2)
+size = Vector3(2.8, 3.4, 1.4)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_portal_spark"]
+shading_mode = 0
+albedo_color = Color(0.2, 0.95, 1, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_portal_spark"]
+material = SubResource("StandardMaterial3D_portal_spark")
+size = Vector3(0.09, 0.09, 0.09)
+
+[sub_resource type="Curve" id="Curve_portal_spark"]
+_data = [Vector2(0, 0.2), 0.0, 3.0, 0, 0, Vector2(0.5, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), -2.0, 0.0, 0, 0]
+point_count = 3
 
 [node name="ExitPortal" type="Area3D"]
 collision_layer = 4
@@ -14,25 +26,40 @@ collision_mask = 2
 script = ExtResource("1_ep")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
 shape = SubResource("BoxShape3D_portal")
 
 [node name="VisualRoot" type="Node3D" parent="."]
 
 [node name="PortalGateModel" parent="VisualRoot" instance=ExtResource("2_ep_model")]
 
+[node name="PortalParticles" type="CPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.95, 0)
+emitting = false
+amount = 24
+lifetime = 1.2
+mesh = SubResource("BoxMesh_portal_spark")
+emission_shape = 2
+emission_sphere_radius = 1.4
+direction = Vector3(0, 1, 0)
+spread = 180.0
+gravity = Vector3(0, 0.5, 0)
+initial_velocity_min = 0.5
+initial_velocity_max = 1.2
+scale_amount_curve = SubResource("Curve_portal_spark")
+
 [node name="OmniLight3D" type="OmniLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
-light_color = Color(0.2, 0.9, 1, 1)
-light_energy = 3.0
-omni_range = 5.0
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.95, 0)
+light_color = Color(0.15, 0.95, 1, 1)
+light_energy = 3.5
+omni_range = 6.0
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.95, 0)
 stream = ExtResource("3_sfx_portal")
 volume_db = -1.0
 
 [node name="VictoryAudio" type="AudioStreamPlayer3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.95, 0)
 stream = ExtResource("4_sfx_victory")
 volume_db = 2.0
