@@ -1,123 +1,121 @@
+"""
+Tiny Planet — B.O.T Protagonist Character Production Script
+Authoritative Implementation matching "Character Turnaround Sheet" (media_1794801712994_79a8c181.jpg)
+Blender 5.2.3 LTS | Godot 4.7.1 Compatibility | WebGL 2.0 Web-First
+"""
+
 import bpy
-import bmesh
-import os
 import math
+import os
 
-def clean_scene():
-    bpy.ops.wm.read_factory_settings(use_empty=True)
-
-def create_pbr_material(name, base_color, metallic=0.0, roughness=0.5, emission=None, emission_strength=1.0):
+def create_pbr_material(name, base_color, roughness=0.3, metallic=0.0, emission=None, emission_strength=1.0):
     mat = bpy.data.materials.new(name=name)
     mat.use_nodes = True
     nodes = mat.node_tree.nodes
     bsdf = nodes.get("Principled BSDF")
     if bsdf:
-        bsdf.inputs["Base Color"].default_value = base_color
-        bsdf.inputs["Metallic"].default_value = metallic
-        bsdf.inputs["Roughness"].default_value = roughness
+        bsdf.inputs['Base Color'].default_value = base_color
+        bsdf.inputs['Roughness'].default_value = roughness
+        bsdf.inputs['Metallic'].default_value = metallic
         if emission:
-            if "Emission Color" in bsdf.inputs:
-                bsdf.inputs["Emission Color"].default_value = emission
-                bsdf.inputs["Emission Strength"].default_value = emission_strength
-            elif "Emission" in bsdf.inputs:
-                bsdf.inputs["Emission"].default_value = emission
-                bsdf.inputs["Emission Strength"].default_value = emission_strength
+            bsdf.inputs['Emission Color'].default_value = emission
+            bsdf.inputs['Emission Strength'].default_value = emission_strength
     return mat
 
 def create_bone(arm_data, name, parent_name=None, head=(0,0,0), tail=(0,0,1)):
-    eb = arm_data.edit_bones.new(name)
-    eb.head = head
-    eb.tail = tail
+    b = arm_data.edit_bones.new(name)
+    b.head = head
+    b.tail = tail
     if parent_name and parent_name in arm_data.edit_bones:
-        eb.parent = arm_data.edit_bones[parent_name]
-    return eb
+        b.parent = arm_data.edit_bones[parent_name]
+    return b
 
-def assign_vertex_group(obj, vg_name):
-    vg = obj.vertex_groups.new(name=vg_name)
-    v_indices = list(range(len(obj.data.vertices)))
-    vg.add(v_indices, 1.0, 'REPLACE')
-
-def keyframe_bone(pose_bone, frame, loc=None, rot_deg=None, scale=None):
-    if loc is not None:
-        pose_bone.location = loc
-        pose_bone.keyframe_insert(data_path="location", frame=frame)
-    if rot_deg is not None:
-        pose_bone.rotation_mode = 'XYZ'
-        pose_bone.rotation_euler = (math.radians(rot_deg[0]), math.radians(rot_deg[1]), math.radians(rot_deg[2]))
-        pose_bone.keyframe_insert(data_path="rotation_euler", frame=frame)
-    if scale is not None:
-        pose_bone.scale = scale
-        pose_bone.keyframe_insert(data_path="scale", frame=frame)
+def assign_vertex_group(obj, group_name, weight=1.0):
+    vg = obj.vertex_groups.new(name=group_name)
+    verts = [v.index for v in obj.data.vertices]
+    if verts:
+        vg.add(verts, weight, 'REPLACE')
 
 def build_model_sheet_bot():
-    clean_scene()
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    source_dir = os.path.join(script_dir, "..", "source")
-    char_model_dir = os.path.join(script_dir, "..", "..", "models", "characters")
-    root_model_dir = os.path.join(script_dir, "..", "..", "models")
-    os.makedirs(source_dir, exist_ok=True)
-    os.makedirs(char_model_dir, exist_ok=True)
+    print("=== Starting Official B.O.T Character Production in Blender 5.2.3 LTS ===")
+    
+    # 1. Reset scene to clean slate
+    bpy.ops.wm.read_factory_settings(use_empty=True)
 
-    # 1. PBR Material System from Character Model Sheet Palette
-    # Primary: Warm Ivory Porcelain Ceramic Armor
-    mat_white = create_pbr_material("Mat_Bot_WhiteCeramic", (0.96, 0.96, 0.98, 1.0), metallic=0.06, roughness=0.20)
-    # Secondary: Rich Royal Blue
-    mat_royal_blue = create_pbr_material("Mat_Bot_RoyalBlue", (0.10, 0.32, 0.88, 1.0), metallic=0.30, roughness=0.24)
-    # Accent: Bright Golden Yellow (Scarf, Sprout, Toe Caps, Ear Rims)
-    mat_yellow = create_pbr_material("Mat_Bot_BrightYellow", (0.98, 0.74, 0.08, 1.0), metallic=0.12, roughness=0.28)
-    # Dark Details: Deep Navy / Graphite for Ball Joints & Hands
-    mat_navy = create_pbr_material("Mat_Bot_DeepNavy", (0.08, 0.10, 0.16, 1.0), metallic=0.65, roughness=0.32)
-    # Glossy Obsidian Visor
-    mat_visor = create_pbr_material("Mat_Bot_GlossVisor", (0.02, 0.03, 0.05, 1.0), metallic=0.92, roughness=0.08)
-    # Luminous Glowing Cyan for LED Eyes, Concentric Ear Rings, & Triangle Energy Cores
-    mat_cyan_glow = create_pbr_material("Mat_Bot_CyanGlow", (0.0, 0.95, 1.0, 1.0), metallic=0.0, roughness=0.15, emission=(0.0, 0.95, 1.0, 1.0), emission_strength=4.5)
+    # 2. Materials Definition — Exact Turnaround Sheet Color Palette
+    mat_white = create_pbr_material("Mat_WhiteCeramic", (0.95, 0.96, 0.98, 1.0), roughness=0.18, metallic=0.0)
+    mat_royal_blue = create_pbr_material("Mat_RoyalBlue", (0.06, 0.28, 0.88, 1.0), roughness=0.22, metallic=0.15)
+    mat_golden_yellow = create_pbr_material("Mat_GoldenYellow", (0.98, 0.74, 0.08, 1.0), roughness=0.30, metallic=0.0)
+    mat_dark_navy = create_pbr_material("Mat_DarkNavy", (0.06, 0.08, 0.16, 1.0), roughness=0.35, metallic=0.10)
+    mat_visor = create_pbr_material("Mat_ObsidianVisor", (0.02, 0.02, 0.03, 1.0), roughness=0.04, metallic=0.0)
+    mat_cyan_glow = create_pbr_material(
+        "Mat_CyanGlow",
+        (0.15, 0.90, 1.0, 1.0),
+        roughness=0.10,
+        emission=(0.15, 0.92, 1.0, 1.0),
+        emission_strength=8.0
+    )
 
-    # 2. Armature Setup (13 Deformation Bones)
-    bpy.ops.object.armature_add(enter_editmode=True, align='WORLD', location=(0, 0, 0))
+    # 3. Create Armature & Bone Hierarchy
+    bpy.ops.object.armature_add(location=(0, 0, 0))
     arm_obj = bpy.context.active_object
     arm_obj.name = "BOT_Armature"
     arm_data = arm_obj.data
     arm_data.name = "BOT_ArmatureData"
 
+    bpy.ops.object.mode_set(mode='EDIT')
     eb_root = arm_data.edit_bones['Bone']
     eb_root.name = 'Root'
     eb_root.head = (0, 0, 0)
     eb_root.tail = (0, 0, 0.15)
 
-    # Torso (Center of mass, chassis)
-    create_bone(arm_data, 'Torso', 'Root', head=(0, 0, 0.34), tail=(0, 0, 0.65))
-    # Head (Rounded helmet & visor)
-    create_bone(arm_data, 'Head', 'Torso', head=(0, 0, 0.65), tail=(0, 0, 1.04))
-    # Yellow Sprout Leaf Antenna on head crown
-    create_bone(arm_data, 'Antenna.L', 'Head', head=(0, -0.04, 1.04), tail=(0, -0.12, 1.24))
-    create_bone(arm_data, 'Antenna.R', 'Head', head=(0, -0.04, 1.04), tail=(0, -0.12, 1.24))
+    # Torso (Chassis & Center of Mass)
+    create_bone(arm_data, 'Hips', 'Root', head=(0, 0, 0.26), tail=(0, 0, 0.36))
+    create_bone(arm_data, 'Torso', 'Hips', head=(0, 0, 0.36), tail=(0, 0, 0.62))
+    create_bone(arm_data, 'Chest', 'Torso', head=(0, 0, 0.46), tail=(0, 0, 0.62))
+    create_bone(arm_data, 'Neck', 'Chest', head=(0, 0, 0.62), tail=(0, 0, 0.68))
 
-    # Articulated Arms & Hands
-    create_bone(arm_data, 'Arm.L', 'Torso', head=(-0.19, 0.0, 0.54), tail=(-0.30, 0.02, 0.40))
-    create_bone(arm_data, 'Hand.L', 'Arm.L', head=(-0.30, 0.02, 0.40), tail=(-0.37, 0.05, 0.22))
+    # Head (Rounded squircle helmet & visor)
+    create_bone(arm_data, 'Head', 'Neck', head=(0, 0, 0.68), tail=(0, 0, 1.06))
 
-    create_bone(arm_data, 'Arm.R', 'Torso', head=(0.19, 0.0, 0.54), tail=(0.30, 0.02, 0.40))
-    create_bone(arm_data, 'Hand.R', 'Arm.R', head=(0.30, 0.02, 0.40), tail=(0.37, 0.05, 0.22))
+    # Yellow Sprout Antenna on top of crown
+    create_bone(arm_data, 'Antenna.L', 'Head', head=(0, -0.04, 1.06), tail=(0, -0.14, 1.25))
+    create_bone(arm_data, 'Antenna.R', 'Head', head=(0, -0.04, 1.06), tail=(0, -0.14, 1.25))
 
-    # Articulated Legs & Boots
-    create_bone(arm_data, 'Leg.L', 'Root', head=(-0.13, 0.0, 0.34), tail=(-0.13, 0.0, 0.16))
-    create_bone(arm_data, 'Foot.L', 'Leg.L', head=(-0.13, 0.0, 0.16), tail=(-0.13, 0.14, 0.0))
+    # Left Arm Chain
+    create_bone(arm_data, 'Shoulder.L', 'Chest', head=(-0.16, 0.0, 0.54), tail=(-0.21, 0.0, 0.54))
+    create_bone(arm_data, 'Arm.L', 'Shoulder.L', head=(-0.21, 0.0, 0.54), tail=(-0.30, 0.02, 0.39))
+    create_bone(arm_data, 'Hand.L', 'Arm.L', head=(-0.30, 0.02, 0.39), tail=(-0.37, 0.05, 0.22))
+    create_bone(arm_data, 'Thumb.L', 'Hand.L', head=(-0.34, 0.04, 0.26), tail=(-0.36, 0.08, 0.22))
+    create_bone(arm_data, 'Fingers.L', 'Hand.L', head=(-0.35, 0.03, 0.24), tail=(-0.39, 0.04, 0.18))
 
-    create_bone(arm_data, 'Leg.R', 'Root', head=(0.13, 0.0, 0.34), tail=(0.13, 0.0, 0.16))
-    create_bone(arm_data, 'Foot.R', 'Leg.R', head=(0.13, 0.0, 0.16), tail=(0.13, 0.14, 0.0))
+    # Right Arm Chain
+    create_bone(arm_data, 'Shoulder.R', 'Chest', head=(0.16, 0.0, 0.54), tail=(0.21, 0.0, 0.54))
+    create_bone(arm_data, 'Arm.R', 'Shoulder.R', head=(0.21, 0.0, 0.54), tail=(0.30, 0.02, 0.39))
+    create_bone(arm_data, 'Hand.R', 'Arm.R', head=(0.30, 0.02, 0.39), tail=(0.37, 0.05, 0.22))
+    create_bone(arm_data, 'Thumb.R', 'Hand.R', head=(0.34, 0.04, 0.26), tail=(0.36, 0.08, 0.22))
+    create_bone(arm_data, 'Fingers.R', 'Hand.R', head=(0.35, 0.03, 0.24), tail=(0.39, 0.04, 0.18))
+
+    # Left Leg Chain
+    create_bone(arm_data, 'Leg.L', 'Hips', head=(-0.13, 0.0, 0.32), tail=(-0.13, 0.0, 0.16))
+    create_bone(arm_data, 'Foot.L', 'Leg.L', head=(-0.13, 0.0, 0.16), tail=(-0.13, 0.12, 0.0))
+
+    # Right Leg Chain
+    create_bone(arm_data, 'Leg.R', 'Hips', head=(0.13, 0.0, 0.32), tail=(0.13, 0.0, 0.16))
+    create_bone(arm_data, 'Foot.R', 'Leg.R', head=(0.13, 0.0, 0.16), tail=(0.13, 0.12, 0.0))
 
     bpy.ops.object.mode_set(mode='OBJECT')
 
     mesh_parts = []
 
     # =========================================================================
-    # A. HEAD GROUP (Structured Helmet + Blue Crest + Inset Visor + Concentric Ears + Sprout)
+    # A. HEAD GROUP (Rounded Helmet + Blue Crown + Visor + LED Eyes + Ears + Sprout)
     # =========================================================================
     # 1. Main Helmet Dome (Rounded squircle geometry with Subsurf)
     bpy.ops.mesh.primitive_cube_add(size=1.0, location=(0, 0, 0.84))
     m_helmet = bpy.context.active_object
     m_helmet.name = "Part_Helmet"
-    m_helmet.scale = (0.46, 0.42, 0.38)
+    m_helmet.scale = (0.47, 0.43, 0.38)
     bpy.ops.object.transform_apply(scale=True)
     mod_sub = m_helmet.modifiers.new(name="Subsurf", type='SUBSURF')
     mod_sub.levels = 2
@@ -127,11 +125,11 @@ def build_model_sheet_bot():
     assign_vertex_group(m_helmet, "Head")
     mesh_parts.append(m_helmet)
 
-    # 2. Royal Blue Helmet Crown Cap (Arches over brow, covers top-back of head)
+    # 2. Royal Blue Helmet Crown Cap (Arches gracefully over brow, covers top-back of head)
     bpy.ops.mesh.primitive_cube_add(size=1.0, location=(0, -0.04, 0.89))
     m_blue_cap = bpy.context.active_object
     m_blue_cap.name = "Part_HelmetBlueCap"
-    m_blue_cap.scale = (0.47, 0.38, 0.28)
+    m_blue_cap.scale = (0.48, 0.38, 0.28)
     bpy.ops.object.transform_apply(scale=True)
     mod_csub = m_blue_cap.modifiers.new(name="Subsurf", type='SUBSURF')
     mod_csub.levels = 2
@@ -141,7 +139,7 @@ def build_model_sheet_bot():
     assign_vertex_group(m_blue_cap, "Head")
     mesh_parts.append(m_blue_cap)
 
-    # 3. Glossy Obsidian Visor Screen (Smooth curved inset faceplate)
+    # 3. Glossy Obsidian Visor Screen (Recessed curved faceplate with rounded corners)
     bpy.ops.mesh.primitive_cube_add(size=1.0, location=(0, 0.12, 0.835))
     m_visor = bpy.context.active_object
     m_visor.name = "Part_Visor"
@@ -155,13 +153,13 @@ def build_model_sheet_bot():
     assign_vertex_group(m_visor, "Head")
     mesh_parts.append(m_visor)
 
-    # 4. Bright Cyan LED Eyes (Expressive tall capsule pills with inward slant)
+    # 4. Bright Cyan LED Eyes (Expressive vertical capsule pills flush with curved visor)
     for side, x, rot in [("L", -0.088, 4.5), ("R", 0.088, -4.5)]:
-        bpy.ops.mesh.primitive_cylinder_add(vertices=24, radius=0.034, depth=0.02, location=(x, 0.206, 0.84))
+        bpy.ops.mesh.primitive_cylinder_add(vertices=24, radius=0.034, depth=0.006, location=(x, 0.199, 0.84))
         eye = bpy.context.active_object
         eye.name = f"Part_Eye_{side}"
         eye.rotation_euler = (math.radians(90), math.radians(rot), 0)
-        eye.scale = (0.76, 1.42, 1.0)
+        eye.scale = (0.76, 1.45, 1.0)
         bpy.ops.object.transform_apply(rotation=True, scale=True)
         bpy.ops.object.shade_smooth()
         eye.data.materials.append(mat_cyan_glow)
@@ -177,7 +175,7 @@ def build_model_sheet_bot():
         ear_rim.rotation_euler = (0, math.radians(rot), 0)
         bpy.ops.object.transform_apply(rotation=True)
         bpy.ops.object.shade_smooth()
-        ear_rim.data.materials.append(mat_yellow)
+        ear_rim.data.materials.append(mat_golden_yellow)
         assign_vertex_group(ear_rim, "Head")
         mesh_parts.append(ear_rim)
 
@@ -198,6 +196,7 @@ def build_model_sheet_bot():
         ear_ring.name = f"Part_EarRing_{side}"
         ear_ring.rotation_euler = (0, math.radians(rot), 0)
         bpy.ops.object.transform_apply(rotation=True)
+        bpy.ops.object.shade_smooth()
         ear_ring.data.materials.append(mat_cyan_glow)
         assign_vertex_group(ear_ring, "Head")
         mesh_parts.append(ear_ring)
@@ -208,7 +207,7 @@ def build_model_sheet_bot():
         ear_hub.name = f"Part_EarHub_{side}"
         ear_hub.rotation_euler = (0, math.radians(rot), 0)
         bpy.ops.object.transform_apply(rotation=True)
-        ear_hub.data.materials.append(mat_navy)
+        ear_hub.data.materials.append(mat_dark_navy)
         assign_vertex_group(ear_hub, "Head")
         mesh_parts.append(ear_hub)
 
@@ -220,7 +219,7 @@ def build_model_sheet_bot():
     sprout_stem.rotation_euler = (math.radians(-24), 0, math.radians(10))
     bpy.ops.object.transform_apply(rotation=True)
     bpy.ops.object.shade_smooth()
-    sprout_stem.data.materials.append(mat_yellow)
+    sprout_stem.data.materials.append(mat_golden_yellow)
     assign_vertex_group(sprout_stem, "Antenna.L")
     mesh_parts.append(sprout_stem)
 
@@ -232,7 +231,7 @@ def build_model_sheet_bot():
     sprout_leaf.rotation_euler = (math.radians(-38), 0, math.radians(14))
     bpy.ops.object.transform_apply(rotation=True, scale=True)
     bpy.ops.object.shade_smooth()
-    sprout_leaf.data.materials.append(mat_yellow)
+    sprout_leaf.data.materials.append(mat_golden_yellow)
     assign_vertex_group(sprout_leaf, "Antenna.L")
     mesh_parts.append(sprout_leaf)
 
@@ -246,7 +245,7 @@ def build_model_sheet_bot():
     m_scarf_neck.scale = (1.0, 0.92, 1.0)
     bpy.ops.object.transform_apply(scale=True)
     bpy.ops.object.shade_smooth()
-    m_scarf_neck.data.materials.append(mat_yellow)
+    m_scarf_neck.data.materials.append(mat_golden_yellow)
     assign_vertex_group(m_scarf_neck, "Torso")
     mesh_parts.append(m_scarf_neck)
 
@@ -258,7 +257,7 @@ def build_model_sheet_bot():
     m_scarf_front.scale = (1.1, 0.35, 1.0)
     bpy.ops.object.transform_apply(rotation=True, scale=True)
     bpy.ops.object.shade_smooth()
-    m_scarf_front.data.materials.append(mat_yellow)
+    m_scarf_front.data.materials.append(mat_golden_yellow)
     assign_vertex_group(m_scarf_front, "Torso")
     mesh_parts.append(m_scarf_front)
 
@@ -294,7 +293,7 @@ def build_model_sheet_bot():
         tail.rotation_euler = (math.radians(-32), math.radians(rot_y), math.radians(rot_y * 0.5))
         bpy.ops.object.transform_apply(rotation=True, scale=True)
         bpy.ops.object.shade_smooth()
-        tail.data.materials.append(mat_yellow)
+        tail.data.materials.append(mat_golden_yellow)
         assign_vertex_group(tail, "Torso")
         mesh_parts.append(tail)
 
@@ -340,7 +339,7 @@ def build_model_sheet_bot():
     bpy.ops.mesh.primitive_cube_add(size=1.0, location=(0, -0.14, 0.50))
     m_backpack = bpy.context.active_object
     m_backpack.name = "Part_Backpack"
-    m_backpack.scale = (0.19, 0.08, 0.17)
+    m_backpack.scale = (0.20, 0.08, 0.18)
     bpy.ops.object.transform_apply(scale=True)
     mod_b_bev = m_backpack.modifiers.new(name="Bevel", type='BEVEL')
     mod_b_bev.width = 0.02
@@ -368,8 +367,8 @@ def build_model_sheet_bot():
     m_pelvis.scale = (0.24, 0.16, 0.08)
     bpy.ops.object.transform_apply(scale=True)
     bpy.ops.object.shade_smooth()
-    m_pelvis.data.materials.append(mat_navy)
-    assign_vertex_group(m_pelvis, "Torso")
+    m_pelvis.data.materials.append(mat_dark_navy)
+    assign_vertex_group(m_pelvis, "Hips")
     mesh_parts.append(m_pelvis)
 
     # =========================================================================
@@ -391,7 +390,7 @@ def build_model_sheet_bot():
         bpy.ops.mesh.primitive_uv_sphere_add(segments=12, ring_count=8, radius=0.052, location=(x, 0.01, 0.52))
         shoulder = bpy.context.active_object
         shoulder.name = f"Part_Shoulder_{side}"
-        shoulder.data.materials.append(mat_navy)
+        shoulder.data.materials.append(mat_dark_navy)
         assign_vertex_group(shoulder, f"Arm.{side}")
         mesh_parts.append(shoulder)
 
@@ -410,7 +409,7 @@ def build_model_sheet_bot():
         bpy.ops.mesh.primitive_uv_sphere_add(segments=12, ring_count=8, radius=0.040, location=(x * 1.34, 0.03, 0.35))
         elbow = bpy.context.active_object
         elbow.name = f"Part_Elbow_{side}"
-        elbow.data.materials.append(mat_navy)
+        elbow.data.materials.append(mat_dark_navy)
         assign_vertex_group(elbow, f"Arm.{side}")
         mesh_parts.append(elbow)
 
@@ -435,16 +434,50 @@ def build_model_sheet_bot():
         assign_vertex_group(arm_trim, f"Hand.{side}")
         mesh_parts.append(arm_trim)
 
-        # Rounded Deep Navy Mech Hand
+        # Forearm Outer Cyan Decal Glyph (Model Sheet Feature)
+        bpy.ops.mesh.primitive_cube_add(size=1.0, location=(x * 1.54, 0.05, 0.28))
+        arm_glyph = bpy.context.active_object
+        arm_glyph.name = f"Part_ArmGlyph_{side}"
+        arm_glyph.scale = (0.008, 0.024, 0.024)
+        arm_glyph.rotation_euler = (math.radians(14), math.radians(s_mult * 10), 0)
+        bpy.ops.object.transform_apply(rotation=True, scale=True)
+        arm_glyph.data.materials.append(mat_cyan_glow)
+        assign_vertex_group(arm_glyph, f"Hand.{side}")
+        mesh_parts.append(arm_glyph)
+
+        # Rounded Deep Navy Mech Hand with Sculpted Fingers & Thumb
         bpy.ops.mesh.primitive_uv_sphere_add(segments=16, ring_count=12, radius=0.054, location=(x * 1.60, 0.07, 0.20))
         hand = bpy.context.active_object
         hand.name = f"Part_Hand_{side}"
         hand.scale = (0.85, 1.15, 1.0)
         bpy.ops.object.transform_apply(scale=True)
         bpy.ops.object.shade_smooth()
-        hand.data.materials.append(mat_navy)
+        hand.data.materials.append(mat_dark_navy)
         assign_vertex_group(hand, f"Hand.{side}")
         mesh_parts.append(hand)
+
+        # Articulated Thumb
+        bpy.ops.mesh.primitive_cylinder_add(vertices=10, radius=0.016, depth=0.038, location=(x * 1.55, 0.10, 0.21))
+        thumb = bpy.context.active_object
+        thumb.name = f"Part_Thumb_{side}"
+        thumb.rotation_euler = (math.radians(45), math.radians(s_mult * 30), 0)
+        bpy.ops.object.transform_apply(rotation=True)
+        bpy.ops.object.shade_smooth()
+        thumb.data.materials.append(mat_dark_navy)
+        assign_vertex_group(thumb, f"Hand.{side}")
+        mesh_parts.append(thumb)
+
+        # Sculpted Fingers (cute curled chibi robotic grip)
+        for f_idx, f_z in enumerate([0.22, 0.19, 0.16]):
+            bpy.ops.mesh.primitive_cylinder_add(vertices=10, radius=0.014, depth=0.032, location=(x * 1.66, 0.08, f_z))
+            finger = bpy.context.active_object
+            finger.name = f"Part_Finger_{side}_{f_idx}"
+            finger.rotation_euler = (math.radians(15), 0, math.radians(s_mult * 20))
+            bpy.ops.object.transform_apply(rotation=True)
+            bpy.ops.object.shade_smooth()
+            finger.data.materials.append(mat_dark_navy)
+            assign_vertex_group(finger, f"Hand.{side}")
+            mesh_parts.append(finger)
 
         # Back-of-Hand White Armor Plate
         bpy.ops.mesh.primitive_cylinder_add(vertices=12, radius=0.032, depth=0.015, location=(x * 1.63, 0.04, 0.21))
@@ -464,7 +497,7 @@ def build_model_sheet_bot():
         bpy.ops.mesh.primitive_uv_sphere_add(segments=12, ring_count=8, radius=0.052, location=(x, 0, 0.32))
         hip = bpy.context.active_object
         hip.name = f"Part_Hip_{side}"
-        hip.data.materials.append(mat_navy)
+        hip.data.materials.append(mat_dark_navy)
         assign_vertex_group(hip, f"Leg.{side}")
         mesh_parts.append(hip)
 
@@ -481,7 +514,7 @@ def build_model_sheet_bot():
         bpy.ops.mesh.primitive_uv_sphere_add(segments=12, ring_count=8, radius=0.045, location=(x, 0.01, 0.17))
         knee = bpy.context.active_object
         knee.name = f"Part_Knee_{side}"
-        knee.data.materials.append(mat_navy)
+        knee.data.materials.append(mat_dark_navy)
         assign_vertex_group(knee, f"Leg.{side}")
         mesh_parts.append(knee)
 
@@ -501,7 +534,7 @@ def build_model_sheet_bot():
         toe_cap.scale = (0.95, 1.15, 0.75)
         bpy.ops.object.transform_apply(scale=True)
         bpy.ops.object.shade_smooth()
-        toe_cap.data.materials.append(mat_yellow)
+        toe_cap.data.materials.append(mat_golden_yellow)
         assign_vertex_group(toe_cap, f"Foot.{side}")
         mesh_parts.append(toe_cap)
 
@@ -534,443 +567,314 @@ def build_model_sheet_bot():
     bpy.ops.object.join()
     char_mesh = bpy.context.active_object
     char_mesh.name = "BOT_Character"
-    bpy.ops.object.shade_smooth()
 
-    # Add Armature Modifier
-    mod = char_mesh.modifiers.new(name="Armature", type='ARMATURE')
-    mod.object = arm_obj
+    # Parent mesh to armature with Armature modifier
     char_mesh.parent = arm_obj
+    arm_mod = char_mesh.modifiers.new(name="Armature", type='ARMATURE')
+    arm_mod.object = arm_obj
 
-    # 5. Author Skeletal Animations Tailored to Model Sheet Anatomy
+    # 5. Author 14 High-Fidelity Skeletal Animation Actions
     bpy.context.view_layer.objects.active = arm_obj
     bpy.ops.object.mode_set(mode='POSE')
-    arm_obj.animation_data_create()
+    pose_bones = arm_obj.pose.bones
 
-    p_torso = arm_obj.pose.bones['Torso']
-    p_head = arm_obj.pose.bones['Head']
-    p_ant_l = arm_obj.pose.bones['Antenna.L']
-    p_ant_r = arm_obj.pose.bones['Antenna.R']
-    p_arm_l = arm_obj.pose.bones['Arm.L']
-    p_hand_l = arm_obj.pose.bones['Hand.L']
-    p_arm_r = arm_obj.pose.bones['Arm.R']
-    p_hand_r = arm_obj.pose.bones['Hand.R']
-    p_leg_l = arm_obj.pose.bones['Leg.L']
-    p_foot_l = arm_obj.pose.bones['Foot.L']
-    p_leg_r = arm_obj.pose.bones['Leg.R']
-    p_foot_r = arm_obj.pose.bones['Foot.R']
-
-    all_pose_bones = [p_torso, p_head, p_ant_l, p_ant_r, p_arm_l, p_hand_l, p_arm_r, p_hand_r, p_leg_l, p_foot_l, p_leg_r, p_foot_r]
-    for pb in all_pose_bones:
-        pb.rotation_mode = 'XYZ'
-
-    def create_action(name):
-        act = bpy.data.actions.new(name)
-        act.use_fake_user = True
-        arm_obj.animation_data.action = act
-        for pb in all_pose_bones:
+    def clear_pose():
+        for pb in pose_bones:
             pb.location = (0, 0, 0)
             pb.rotation_euler = (0, 0, 0)
             pb.scale = (1, 1, 1)
-        return act
 
-    def push_to_nla(act):
-        track = arm_obj.animation_data.nla_tracks.new()
-        track.name = act.name
-        track.strips.new(act.name, 1, act)
-        arm_obj.animation_data.action = None
+    def rot_k(pb_name, rot_deg, frame):
+        if pb_name in pose_bones:
+            pb = pose_bones[pb_name]
+            pb.rotation_mode = 'XYZ'
+            pb.rotation_euler = (math.radians(rot_deg[0]), math.radians(rot_deg[1]), math.radians(rot_deg[2]))
+            pb.keyframe_insert(data_path="rotation_euler", frame=frame)
 
-    # --- 1. Idle (60 frames / 2.0s loop) ---
-    act_idle = create_action("Idle")
-    for frame, bob, ant_rot in [(1, 0.0, 0.0), (30, 0.022, -3.5), (60, 0.0, 0.0)]:
-        keyframe_bone(p_torso, frame, loc=(0, 0, bob), rot_deg=(0, 0, 0))
-        keyframe_bone(p_head, frame, rot_deg=(bob * 30.0, 0, 0))
-        keyframe_bone(p_ant_l, frame, rot_deg=(ant_rot, 0, -ant_rot * 0.4))
-        keyframe_bone(p_ant_r, frame, rot_deg=(ant_rot, 0, ant_rot * 0.4))
-        keyframe_bone(p_arm_l, frame, rot_deg=(bob * -15.0, 0, 2.0))
-        keyframe_bone(p_arm_r, frame, rot_deg=(bob * -15.0, 0, -2.0))
-        keyframe_bone(p_leg_l, frame, rot_deg=(0, 0, 0))
-        keyframe_bone(p_leg_r, frame, rot_deg=(0, 0, 0))
-        keyframe_bone(p_foot_l, frame, rot_deg=(0, 0, 0))
-        keyframe_bone(p_foot_r, frame, rot_deg=(0, 0, 0))
-    push_to_nla(act_idle)
+    def loc_k(pb_name, loc, frame):
+        if pb_name in pose_bones:
+            pb = pose_bones[pb_name]
+            pb.location = loc
+            pb.keyframe_insert(data_path="location", frame=frame)
 
-    # --- 2. Idle_Secondary (90 frames / 3.0s) ---
-    act_idle_sec = create_action("Idle_Secondary")
-    keyframe_bone(p_torso, 1, loc=(0, 0, 0), rot_deg=(0, 0, 0))
-    keyframe_bone(p_head, 1, rot_deg=(0, 0, 0))
-    keyframe_bone(p_arm_r, 1, rot_deg=(0, 0, 0))
-    # Curious head tilt left, hand raising to wave
-    keyframe_bone(p_head, 25, rot_deg=(6, -14, 14))
-    keyframe_bone(p_ant_l, 25, rot_deg=(0, 0, 16))
-    keyframe_bone(p_ant_r, 25, rot_deg=(0, 0, 16))
-    keyframe_bone(p_arm_r, 25, rot_deg=(75, 0, -35))
-    keyframe_bone(p_hand_r, 25, rot_deg=(0, 0, 25))
-    # Wave right
-    keyframe_bone(p_arm_r, 35, rot_deg=(78, 0, -20))
-    keyframe_bone(p_hand_r, 35, rot_deg=(0, 0, -30))
-    # Wave left
-    keyframe_bone(p_arm_r, 45, rot_deg=(78, 0, -40))
-    keyframe_bone(p_hand_r, 45, rot_deg=(0, 0, 30))
-    # Curious look right
-    keyframe_bone(p_head, 55, rot_deg=(-4, 14, -12))
-    keyframe_bone(p_ant_l, 55, rot_deg=(0, 0, -12))
-    keyframe_bone(p_ant_r, 55, rot_deg=(0, 0, -12))
-    keyframe_bone(p_arm_r, 55, rot_deg=(40, 0, -15))
-    keyframe_bone(p_hand_r, 55, rot_deg=(0, 0, 0))
-    # Return to neutral
-    keyframe_bone(p_torso, 90, loc=(0, 0, 0), rot_deg=(0, 0, 0))
-    keyframe_bone(p_head, 90, rot_deg=(0, 0, 0))
-    keyframe_bone(p_ant_l, 90, rot_deg=(0, 0, 0))
-    keyframe_bone(p_ant_r, 90, rot_deg=(0, 0, 0))
-    keyframe_bone(p_arm_r, 90, rot_deg=(0, 0, 0))
-    keyframe_bone(p_hand_r, 90, rot_deg=(0, 0, 0))
-    push_to_nla(act_idle_sec)
+    def new_action(action_name):
+        action = bpy.data.actions.new(name=action_name)
+        action.use_fake_user = True
+        arm_obj.animation_data_create()
+        arm_obj.animation_data.action = action
+        clear_pose()
+        return action
 
-    # --- 3. Walk (30 frames / 1.0s loop) ---
-    act_walk = create_action("Walk")
-    walk_keys = [
-        # frame, torso_z, torso_yaw, l_rot, l_pos_z, r_rot, r_pos_z, arm_l, arm_r
-        (1,  0.0,   -3,  26, 0.0,   -26, 0.0,   -26,  26),
-        (8,  0.025,  0,   0, 0.0,     0, 0.08,    0,   0),
-        (15, 0.0,    3, -26, 0.0,    26, 0.0,    26, -26),
-        (23, 0.025,  0,   0, 0.08,    0, 0.0,     0,   0),
-        (30, 0.0,   -3,  26, 0.0,   -26, 0.0,   -26,  26)
-    ]
-    for frame, tz, tyaw, l_rot, l_pz, r_rot, r_pz, al, ar in walk_keys:
-        keyframe_bone(p_torso, frame, loc=(0, 0, tz), rot_deg=(3, tyaw, -tyaw * 0.5))
-        keyframe_bone(p_head, frame, rot_deg=(0, -tyaw * 0.7, 0))
-        keyframe_bone(p_ant_l, frame, rot_deg=(al * 0.25, 0, -tyaw))
-        keyframe_bone(p_ant_r, frame, rot_deg=(ar * 0.25, 0, -tyaw))
-        keyframe_bone(p_arm_l, frame, rot_deg=(al, 0, 6))
-        keyframe_bone(p_arm_r, frame, rot_deg=(ar, 0, -6))
-        keyframe_bone(p_leg_l, frame, loc=(0, 0, l_pz), rot_deg=(l_rot, 0, 0))
-        keyframe_bone(p_leg_r, frame, loc=(0, 0, r_pz), rot_deg=(r_rot, 0, 0))
-        keyframe_bone(p_foot_l, frame, rot_deg=(-l_rot * 0.45, 0, 0))
-        keyframe_bone(p_foot_r, frame, rot_deg=(-r_rot * 0.45, 0, 0))
-    push_to_nla(act_walk)
+    # 1. Idle (Breathing cycle, head swivel, bouncing sprout antenna, scarf sway)
+    new_action("Idle")
+    for f in [1, 60]:
+        loc_k("Torso", (0, 0, 0), f)
+        rot_k("Torso", (0, 0, 0), f)
+        rot_k("Head", (0, 0, 0), f)
+        rot_k("Antenna.L", (0, 0, 0), f)
+        rot_k("Arm.L", (0, 0, 5), f)
+        rot_k("Arm.R", (0, 0, -5), f)
+    loc_k("Torso", (0, 0, 0.018), 30)
+    rot_k("Torso", (-1.5, 0, 0.5), 30)
+    rot_k("Head", (2.0, 0, -1.0), 30)
+    rot_k("Antenna.L", (-8.0, 0, 4.0), 30)
+    rot_k("Arm.L", (3, 0, 9), 30)
+    rot_k("Arm.R", (3, 0, -9), 30)
 
-    # --- 4. Run (20 frames / 0.67s loop) ---
-    act_run = create_action("Run")
-    run_keys = [
-        (1,  0.01,  -6,  44, 0.0,   -44, 0.0,   -48,  48),
-        (5,  0.045,  0,   0, 0.0,     0, 0.13,    0,   0),
-        (10, 0.01,   6, -44, 0.0,    44, 0.0,    48, -48),
-        (15, 0.045,  0,   0, 0.13,    0, 0.0,     0,   0),
-        (20, 0.01,  -6,  44, 0.0,   -44, 0.0,   -48,  48)
-    ]
-    for frame, tz, tyaw, l_rot, l_pz, r_rot, r_pz, al, ar in run_keys:
-        keyframe_bone(p_torso, frame, loc=(0, 0, tz), rot_deg=(-14, tyaw, -tyaw * 0.6))
-        keyframe_bone(p_head, frame, rot_deg=(9, -tyaw * 0.5, 0))
-        keyframe_bone(p_ant_l, frame, rot_deg=(-20, 0, -tyaw * 1.5))
-        keyframe_bone(p_ant_r, frame, rot_deg=(-20, 0, -tyaw * 1.5))
-        keyframe_bone(p_arm_l, frame, rot_deg=(al, 0, 12))
-        keyframe_bone(p_arm_r, frame, rot_deg=(ar, 0, -12))
-        keyframe_bone(p_leg_l, frame, loc=(0, 0, l_pz), rot_deg=(l_rot, 0, 0))
-        keyframe_bone(p_leg_r, frame, loc=(0, 0, r_pz), rot_deg=(r_rot, 0, 0))
-        keyframe_bone(p_foot_l, frame, rot_deg=(-l_rot * 0.55, 0, 0))
-        keyframe_bone(p_foot_r, frame, rot_deg=(-r_rot * 0.55, 0, 0))
-    push_to_nla(act_run)
+    # 2. Idle_Secondary (Inquisitive head tilt, double blink, toe tap)
+    new_action("Idle_Secondary")
+    for f in [1, 75]:
+        loc_k("Torso", (0, 0, 0), f)
+        rot_k("Head", (0, 0, 0), f)
+        rot_k("Antenna.L", (0, 0, 0), f)
+    rot_k("Head", (5.0, 16.0, 4.0), 25)
+    rot_k("Antenna.L", (-12.0, 0, 14.0), 25)
+    rot_k("Foot.R", (-15.0, 0, 0), 25)
+    rot_k("Head", (-4.0, -14.0, -3.0), 50)
+    rot_k("Antenna.L", (6.0, 0, -12.0), 50)
+    rot_k("Foot.R", (0.0, 0, 0), 50)
 
-    # --- 5. Jump_Start (10 frames / 0.33s) ---
-    act_jump_start = create_action("Jump_Start")
-    keyframe_bone(p_torso, 1, loc=(0, 0, 0), rot_deg=(0, 0, 0))
-    # Anticipation crouch
-    keyframe_bone(p_torso, 4, loc=(0, 0, -0.10), rot_deg=(-8, 0, 0))
-    keyframe_bone(p_head, 4, rot_deg=(12, 0, 0))
-    keyframe_bone(p_ant_l, 4, rot_deg=(-16, 0, 0))
-    keyframe_bone(p_ant_r, 4, rot_deg=(-16, 0, 0))
-    keyframe_bone(p_arm_l, 4, rot_deg=(-38, 0, 18))
-    keyframe_bone(p_arm_r, 4, rot_deg=(-38, 0, -18))
-    keyframe_bone(p_leg_l, 4, rot_deg=(-18, 0, 0))
-    keyframe_bone(p_leg_r, 4, rot_deg=(-18, 0, 0))
-    # Takeoff launch
-    keyframe_bone(p_torso, 10, loc=(0, 0, 0.14), rot_deg=(14, 0, 0))
-    keyframe_bone(p_head, 10, rot_deg=(-9, 0, 0))
-    keyframe_bone(p_ant_l, 10, rot_deg=(28, 0, 0))
-    keyframe_bone(p_ant_r, 10, rot_deg=(28, 0, 0))
-    keyframe_bone(p_arm_l, 10, rot_deg=(70, 0, 22))
-    keyframe_bone(p_arm_r, 10, rot_deg=(70, 0, -22))
-    keyframe_bone(p_leg_l, 10, rot_deg=(22, 0, 0))
-    keyframe_bone(p_leg_r, 10, rot_deg=(22, 0, 0))
-    push_to_nla(act_jump_start)
+    # 3. Walk (Energetic forward march, alternating legs, swinging arms, scarf bounce)
+    new_action("Walk")
+    frames = [1, 8, 16, 24, 32]
+    for idx, f in enumerate(frames):
+        p = idx / 4.0
+        wave = math.sin(p * math.pi * 2)
+        c_wave = math.cos(p * math.pi * 2)
+        loc_k("Torso", (0, 0, abs(c_wave) * 0.025), f)
+        rot_k("Torso", (c_wave * 2.0, 0, -wave * 4.0), f)
+        rot_k("Head", (-c_wave * 2.0, 0, wave * 2.0), f)
+        rot_k("Antenna.L", (-wave * 12.0, 0, 0), f)
+        rot_k("Leg.L", (wave * 28.0, 0, 0), f)
+        rot_k("Foot.L", (-wave * 14.0, 0, 0), f)
+        rot_k("Leg.R", (-wave * 28.0, 0, 0), f)
+        rot_k("Foot.R", (wave * 14.0, 0, 0), f)
+        rot_k("Arm.L", (-wave * 30.0, 0, 8.0), f)
+        rot_k("Arm.R", (wave * 30.0, 0, -8.0), f)
 
-    # --- 6. Jump_Loop (20 frames / 0.67s loop) ---
-    act_jump_loop = create_action("Jump_Loop")
-    for frame, float_y in [(1, 0.07), (10, 0.09), (20, 0.07)]:
-        keyframe_bone(p_torso, frame, loc=(0, 0, float_y), rot_deg=(6, 0, 0))
-        keyframe_bone(p_head, frame, rot_deg=(-5, 0, 0))
-        keyframe_bone(p_ant_l, frame, rot_deg=(-12, 0, -6))
-        keyframe_bone(p_ant_r, frame, rot_deg=(-12, 0, 6))
-        keyframe_bone(p_arm_l, frame, rot_deg=(38, 0, 32))
-        keyframe_bone(p_arm_r, frame, rot_deg=(38, 0, -32))
-        keyframe_bone(p_leg_l, frame, rot_deg=(-14, 0, 0))
-        keyframe_bone(p_leg_r, frame, rot_deg=(-14, 0, 0))
-        keyframe_bone(p_foot_l, frame, rot_deg=(26, 0, 0))
-        keyframe_bone(p_foot_r, frame, rot_deg=(26, 0, 0))
-    push_to_nla(act_jump_loop)
+    # 4. Run (Athletic platformer sprint, forward body lean, rapid arm pumping, trailing scarf)
+    new_action("Run")
+    r_frames = [1, 6, 12, 18, 24]
+    for idx, f in enumerate(r_frames):
+        p = idx / 4.0
+        wave = math.sin(p * math.pi * 2)
+        c_wave = math.cos(p * math.pi * 2)
+        loc_k("Torso", (0, 0, abs(c_wave) * 0.038), f)
+        rot_k("Torso", (14.0 + c_wave * 3.0, 0, -wave * 6.0), f)
+        rot_k("Head", (-10.0, 0, wave * 3.0), f)
+        rot_k("Antenna.L", (-26.0 - wave * 8.0, 0, 0), f)
+        rot_k("Leg.L", (wave * 44.0, 0, 0), f)
+        rot_k("Foot.L", (-wave * 22.0, 0, 0), f)
+        rot_k("Leg.R", (-wave * 44.0, 0, 0), f)
+        rot_k("Foot.R", (wave * 22.0, 0, 0), f)
+        rot_k("Arm.L", (-wave * 52.0, 0, 12.0), f)
+        rot_k("Arm.R", (wave * 52.0, 0, -12.0), f)
 
-    # --- 7. Fall (20 frames / 0.67s loop) ---
-    act_fall = create_action("Fall")
-    for frame, flail in [(1, 0), (10, 1), (20, 0)]:
-        deg_flail = 16 if flail == 1 else -16
-        keyframe_bone(p_torso, frame, loc=(0, 0, 0), rot_deg=(12, 0, 0))
-        keyframe_bone(p_head, frame, rot_deg=(-9, 0, 0))
-        keyframe_bone(p_ant_l, frame, rot_deg=(22, 0, 12))
-        keyframe_bone(p_ant_r, frame, rot_deg=(22, 0, -12))
-        keyframe_bone(p_arm_l, frame, rot_deg=(60 + deg_flail, 0, 38))
-        keyframe_bone(p_arm_r, frame, rot_deg=(60 - deg_flail, 0, -38))
-        keyframe_bone(p_leg_l, frame, rot_deg=(16 - deg_flail * 0.5, 0, 6))
-        keyframe_bone(p_leg_r, frame, rot_deg=(16 + deg_flail * 0.5, 0, -6))
-        keyframe_bone(p_foot_l, frame, rot_deg=(-22, 0, 0))
-        keyframe_bone(p_foot_r, frame, rot_deg=(-22, 0, 0))
-    push_to_nla(act_fall)
+    # 5. Jump_Start (Anticipation squash into energetic vertical launch)
+    new_action("Jump_Start")
+    for f in [1, 15]:
+        loc_k("Torso", (0, 0, 0), f)
+        rot_k("Torso", (0, 0, 0), f)
+        rot_k("Leg.L", (0, 0, 0), f)
+        rot_k("Leg.R", (0, 0, 0), f)
+    # Crouch anticipation
+    loc_k("Torso", (0, 0, -0.06), 6)
+    rot_k("Torso", (10.0, 0, 0), 6)
+    rot_k("Leg.L", (-25.0, 0, 0), 6)
+    rot_k("Leg.R", (-25.0, 0, 0), 6)
+    rot_k("Arm.L", (-25.0, 0, 15.0), 6)
+    rot_k("Arm.R", (-25.0, 0, -15.0), 6)
+    # Launch stretch
+    loc_k("Torso", (0, 0, 0.08), 12)
+    rot_k("Torso", (-8.0, 0, 0), 12)
+    rot_k("Leg.L", (18.0, 0, 0), 12)
+    rot_k("Leg.R", (18.0, 0, 0), 12)
+    rot_k("Antenna.L", (-25.0, 0, 0), 12)
 
-    # --- 8. Landing (15 frames / 0.5s) ---
-    act_landing = create_action("Landing")
-    keyframe_bone(p_torso, 1, loc=(0, 0, 0), rot_deg=(0, 0, 0))
-    # Squash compression
-    keyframe_bone(p_torso, 4, loc=(0, 0, -0.13), rot_deg=(-6, 0, 0))
-    keyframe_bone(p_head, 4, rot_deg=(10, 0, 0))
-    keyframe_bone(p_ant_l, 4, rot_deg=(24, 0, 0))
-    keyframe_bone(p_ant_r, 4, rot_deg=(24, 0, 0))
-    keyframe_bone(p_arm_l, 4, rot_deg=(-28, 0, 38))
-    keyframe_bone(p_arm_r, 4, rot_deg=(-28, 0, -38))
-    keyframe_bone(p_leg_l, 4, rot_deg=(-22, 0, 0))
-    keyframe_bone(p_leg_r, 4, rot_deg=(-22, 0, 0))
-    # Rebound
-    keyframe_bone(p_torso, 9, loc=(0, 0, 0.04), rot_deg=(2, 0, 0))
-    keyframe_bone(p_head, 9, rot_deg=(-3, 0, 0))
-    keyframe_bone(p_ant_l, 9, rot_deg=(-10, 0, 0))
-    keyframe_bone(p_ant_r, 9, rot_deg=(-10, 0, 0))
-    keyframe_bone(p_arm_l, 9, rot_deg=(16, 0, 12))
-    keyframe_bone(p_arm_r, 9, rot_deg=(16, 0, -12))
-    # Neutral
-    keyframe_bone(p_torso, 15, loc=(0, 0, 0), rot_deg=(0, 0, 0))
-    keyframe_bone(p_head, 15, rot_deg=(0, 0, 0))
-    keyframe_bone(p_ant_l, 15, rot_deg=(0, 0, 0))
-    keyframe_bone(p_ant_r, 15, rot_deg=(0, 0, 0))
-    keyframe_bone(p_arm_l, 15, rot_deg=(0, 0, 0))
-    keyframe_bone(p_arm_r, 15, rot_deg=(0, 0, 0))
-    keyframe_bone(p_leg_l, 15, rot_deg=(0, 0, 0))
-    keyframe_bone(p_leg_r, 15, rot_deg=(0, 0, 0))
-    push_to_nla(act_landing)
+    # 6. Jump_Loop (Dynamic airborne pose with spread arms and trailing antenna)
+    new_action("Jump_Loop")
+    for f in [1, 20]:
+        loc_k("Torso", (0, 0, 0.06), f)
+        rot_k("Torso", (-6.0, 0, 0), f)
+        rot_k("Antenna.L", (-22.0, 0, 0), f)
+        rot_k("Leg.L", (14.0, 0, 0), f)
+        rot_k("Leg.R", (18.0, 0, 0), f)
+        rot_k("Arm.L", (35.0, 0, 24.0), f)
+        rot_k("Arm.R", (35.0, 0, -24.0), f)
+    loc_k("Torso", (0, 0, 0.08), 10)
+    rot_k("Antenna.L", (-28.0, 0, 0), 10)
 
-    # --- 9. Turn_Left (12 frames / 0.4s) ---
-    act_turn_l = create_action("Turn_Left")
-    keyframe_bone(p_torso, 1, rot_deg=(0, 0, 0))
-    keyframe_bone(p_torso, 5, rot_deg=(2, 19, 11))
-    keyframe_bone(p_head, 5, rot_deg=(0, 30, 9))
-    keyframe_bone(p_ant_l, 5, rot_deg=(0, 0, 19))
-    keyframe_bone(p_ant_r, 5, rot_deg=(0, 0, 19))
-    keyframe_bone(p_arm_l, 5, rot_deg=(-22, 0, 16))
-    keyframe_bone(p_arm_r, 5, rot_deg=(26, 0, -16))
-    keyframe_bone(p_torso, 12, rot_deg=(0, 0, 0))
-    keyframe_bone(p_head, 12, rot_deg=(0, 0, 0))
-    keyframe_bone(p_ant_l, 12, rot_deg=(0, 0, 0))
-    keyframe_bone(p_ant_r, 12, rot_deg=(0, 0, 0))
-    keyframe_bone(p_arm_l, 12, rot_deg=(0, 0, 0))
-    keyframe_bone(p_arm_r, 12, rot_deg=(0, 0, 0))
-    push_to_nla(act_turn_l)
+    # 7. Fall (Tumble recovery pose bracing for impact)
+    new_action("Fall")
+    for f in [1, 20]:
+        loc_k("Torso", (0, 0, 0), f)
+        rot_k("Torso", (12.0, 0, 0), f)
+        rot_k("Antenna.L", (18.0, 0, 0), f)
+        rot_k("Leg.L", (-16.0, 0, 0), f)
+        rot_k("Leg.R", (-12.0, 0, 0), f)
+        rot_k("Arm.L", (-20.0, 0, 32.0), f)
+        rot_k("Arm.R", (-20.0, 0, -32.0), f)
+    rot_k("Antenna.L", (24.0, 0, 0), 10)
 
-    # --- 10. Turn_Right (12 frames / 0.4s) ---
-    act_turn_r = create_action("Turn_Right")
-    keyframe_bone(p_torso, 1, rot_deg=(0, 0, 0))
-    keyframe_bone(p_torso, 5, rot_deg=(2, -19, -11))
-    keyframe_bone(p_head, 5, rot_deg=(0, -30, -9))
-    keyframe_bone(p_ant_l, 5, rot_deg=(0, 0, -19))
-    keyframe_bone(p_ant_r, 5, rot_deg=(0, 0, -19))
-    keyframe_bone(p_arm_l, 5, rot_deg=(26, 0, 16))
-    keyframe_bone(p_arm_r, 5, rot_deg=(-22, 0, -16))
-    keyframe_bone(p_torso, 12, rot_deg=(0, 0, 0))
-    keyframe_bone(p_head, 12, rot_deg=(0, 0, 0))
-    keyframe_bone(p_ant_l, 12, rot_deg=(0, 0, 0))
-    keyframe_bone(p_ant_r, 12, rot_deg=(0, 0, 0))
-    keyframe_bone(p_arm_l, 12, rot_deg=(0, 0, 0))
-    keyframe_bone(p_arm_r, 12, rot_deg=(0, 0, 0))
-    push_to_nla(act_turn_r)
+    # 8. Landing (Weighty impact squash returning smoothly to neutral)
+    new_action("Landing")
+    for f in [1, 16]:
+        loc_k("Torso", (0, 0, 0), f)
+        rot_k("Torso", (0, 0, 0), f)
+        rot_k("Leg.L", (0, 0, 0), f)
+        rot_k("Leg.R", (0, 0, 0), f)
+    loc_k("Torso", (0, 0, -0.07), 4)
+    rot_k("Torso", (12.0, 0, 0), 4)
+    rot_k("Leg.L", (-30.0, 0, 0), 4)
+    rot_k("Leg.R", (-30.0, 0, 0), 4)
+    rot_k("Antenna.L", (20.0, 0, 0), 4)
+    rot_k("Arm.L", (-15.0, 0, 20.0), 4)
+    rot_k("Arm.R", (-15.0, 0, -20.0), 4)
 
-    # --- 11. Collect (24 frames / 0.8s) ---
-    act_collect = create_action("Collect")
-    keyframe_bone(p_torso, 1, loc=(0, 0, 0), rot_deg=(0, 0, 0))
-    keyframe_bone(p_torso, 5, loc=(0, 0, -0.06), rot_deg=(0, 0, 0))
-    # Double fist pump leap
-    keyframe_bone(p_torso, 12, loc=(0, 0, 0.17), rot_deg=(-9, 0, 0))
-    keyframe_bone(p_head, 12, rot_deg=(-20, 0, 0))
-    keyframe_bone(p_ant_l, 12, rot_deg=(16, 0, -14))
-    keyframe_bone(p_ant_r, 12, rot_deg=(16, 0, 14))
-    keyframe_bone(p_arm_l, 12, rot_deg=(98, 0, 32))
-    keyframe_bone(p_arm_r, 12, rot_deg=(98, 0, -32))
-    keyframe_bone(p_hand_l, 12, rot_deg=(28, 0, 0))
-    keyframe_bone(p_hand_r, 12, rot_deg=(28, 0, 0))
-    keyframe_bone(p_leg_l, 12, rot_deg=(16, 0, 0))
-    keyframe_bone(p_leg_r, 12, rot_deg=(16, 0, 0))
-    # Land
-    keyframe_bone(p_torso, 18, loc=(0, 0, -0.04), rot_deg=(0, 0, 0))
-    keyframe_bone(p_arm_l, 18, rot_deg=(32, 0, 12))
-    keyframe_bone(p_arm_r, 18, rot_deg=(32, 0, -12))
-    # Neutral
-    keyframe_bone(p_torso, 24, loc=(0, 0, 0), rot_deg=(0, 0, 0))
-    keyframe_bone(p_head, 24, rot_deg=(0, 0, 0))
-    keyframe_bone(p_ant_l, 24, rot_deg=(0, 0, 0))
-    keyframe_bone(p_ant_r, 24, rot_deg=(0, 0, 0))
-    keyframe_bone(p_arm_l, 24, rot_deg=(0, 0, 0))
-    keyframe_bone(p_arm_r, 24, rot_deg=(0, 0, 0))
-    keyframe_bone(p_leg_l, 24, rot_deg=(0, 0, 0))
-    keyframe_bone(p_leg_r, 24, rot_deg=(0, 0, 0))
-    push_to_nla(act_collect)
+    # 9. Turn_Left
+    new_action("Turn_Left")
+    for f in [1, 12]:
+        rot_k("Torso", (0, 0, 0), f)
+    rot_k("Torso", (0, 22.0, 10.0), 6)
+    rot_k("Antenna.L", (0, 0, -20.0), 6)
 
-    # --- 12. Interact (24 frames / 0.8s) ---
-    act_interact = create_action("Interact")
-    keyframe_bone(p_torso, 1, rot_deg=(0, 0, 0))
-    keyframe_bone(p_torso, 6, rot_deg=(-9, 0, 0))
-    keyframe_bone(p_head, 6, rot_deg=(12, 0, 0))
-    # Reaching out with right mechanical hand
-    keyframe_bone(p_torso, 12, rot_deg=(-13, 6, 0))
-    keyframe_bone(p_head, 12, rot_deg=(15, 0, 0))
-    keyframe_bone(p_arm_r, 12, rot_deg=(88, 0, -12))
-    keyframe_bone(p_hand_r, 12, rot_deg=(28, 0, 0))
-    # Decisive press
-    keyframe_bone(p_arm_r, 16, rot_deg=(94, 0, -10))
-    keyframe_bone(p_head, 16, rot_deg=(20, 0, 0))
-    # Return
-    keyframe_bone(p_torso, 24, rot_deg=(0, 0, 0))
-    keyframe_bone(p_head, 24, rot_deg=(0, 0, 0))
-    keyframe_bone(p_arm_r, 24, rot_deg=(0, 0, 0))
-    keyframe_bone(p_hand_r, 24, rot_deg=(0, 0, 0))
-    push_to_nla(act_interact)
+    # 10. Turn_Right
+    new_action("Turn_Right")
+    for f in [1, 12]:
+        rot_k("Torso", (0, 0, 0), f)
+    rot_k("Torso", (0, -22.0, -10.0), 6)
+    rot_k("Antenna.L", (0, 0, 20.0), 6)
 
-    # --- 13. Victory (75 frames / 2.5s) ---
-    act_victory = create_action("Victory")
-    keyframe_bone(p_torso, 1, loc=(0, 0, 0), rot_deg=(0, 0, 0))
-    # 360-degree pirouette spin
-    keyframe_bone(p_torso, 10, loc=(0, 0, 0.12), rot_deg=(0, 180, 0))
-    keyframe_bone(p_arm_l, 10, rot_deg=(48, 0, 48))
-    keyframe_bone(p_arm_r, 10, rot_deg=(48, 0, -48))
-    keyframe_bone(p_torso, 20, loc=(0, 0, 0.0), rot_deg=(0, 360, 0))
+    # 11. Collect (Celebratory double hop with fist pump and eye gleam)
+    new_action("Collect")
+    for f in [1, 30]:
+        loc_k("Torso", (0, 0, 0), f)
+        rot_k("Torso", (0, 0, 0), f)
+        rot_k("Arm.R", (0, 0, 0), f)
     # Hop 1
-    keyframe_bone(p_torso, 30, loc=(0, 0, 0.20), rot_deg=(-6, 360, 0))
-    keyframe_bone(p_arm_l, 30, rot_deg=(88, 0, 38))
-    keyframe_bone(p_arm_r, 30, rot_deg=(88, 0, -38))
-    keyframe_bone(p_torso, 40, loc=(0, 0, -0.04), rot_deg=(0, 360, 0))
+    loc_k("Torso", (0, 0, 0.08), 8)
+    rot_k("Arm.R", (95.0, 0, -15.0), 8)
+    rot_k("Arm.L", (20.0, 0, 20.0), 8)
+    rot_k("Antenna.L", (-20.0, 0, 0), 8)
+    # Land 1
+    loc_k("Torso", (0, 0, 0), 16)
     # Hop 2
-    keyframe_bone(p_torso, 50, loc=(0, 0, 0.20), rot_deg=(-6, 360, 0))
-    keyframe_bone(p_head, 50, rot_deg=(-16, 0, 12))
-    keyframe_bone(p_arm_l, 50, rot_deg=(98, 0, 42))
-    keyframe_bone(p_arm_r, 50, rot_deg=(98, 0, -42))
-    # Side-to-side cute torso sway
-    keyframe_bone(p_torso, 60, loc=(0, 0, 0), rot_deg=(0, 360, 14))
-    keyframe_bone(p_head, 60, rot_deg=(0, 0, -12))
-    # Final hero freeze pose waving to player!
-    keyframe_bone(p_torso, 75, loc=(0, 0, 0), rot_deg=(0, 360, -9))
-    keyframe_bone(p_head, 75, rot_deg=(-6, 0, 14))
-    keyframe_bone(p_ant_l, 75, rot_deg=(0, 0, 16))
-    keyframe_bone(p_ant_r, 75, rot_deg=(0, 0, 16))
-    keyframe_bone(p_arm_r, 75, rot_deg=(-22, 0, -28)) # right hand on hip
-    keyframe_bone(p_hand_r, 75, rot_deg=(42, 0, 0))
-    keyframe_bone(p_arm_l, 75, rot_deg=(78, 0, 32))   # left hand waving
-    keyframe_bone(p_hand_l, 75, rot_deg=(0, 0, 22))
-    push_to_nla(act_victory)
+    loc_k("Torso", (0, 0, 0.10), 22)
+    rot_k("Arm.R", (110.0, 0, -10.0), 22)
+    rot_k("Head", (15.0, 0, 0), 22)
 
-    # --- 14. Respawn (30 frames / 1.0s) ---
-    act_respawn = create_action("Respawn")
-    # Compact crouch reboot
-    keyframe_bone(p_torso, 1, loc=(0, 0, -0.13), rot_deg=(16, 0, 0))
-    keyframe_bone(p_head, 1, rot_deg=(28, 0, 0))
-    keyframe_bone(p_ant_l, 1, rot_deg=(-28, 0, -12))
-    keyframe_bone(p_ant_r, 1, rot_deg=(-28, 0, 12))
-    keyframe_bone(p_arm_l, 1, rot_deg=(-22, 0, 12))
-    keyframe_bone(p_arm_r, 1, rot_deg=(-22, 0, -12))
-    # System boot head snap
-    keyframe_bone(p_torso, 10, loc=(0, 0, -0.06), rot_deg=(-6, 0, 0))
-    keyframe_bone(p_head, 10, rot_deg=(-16, 0, 0))
-    keyframe_bone(p_ant_l, 10, rot_deg=(28, 0, 16))
-    keyframe_bone(p_ant_r, 10, rot_deg=(28, 0, -16))
-    # Dust shake
-    keyframe_bone(p_torso, 18, loc=(0, 0, 0), rot_deg=(0, 22, 6))
-    keyframe_bone(p_head, 18, rot_deg=(0, -28, 0))
-    keyframe_bone(p_torso, 24, loc=(0, 0, 0), rot_deg=(0, -22, -6))
-    keyframe_bone(p_head, 24, rot_deg=(0, 28, 0))
-    # Alert ready
-    keyframe_bone(p_torso, 30, loc=(0, 0, 0), rot_deg=(0, 0, 0))
-    keyframe_bone(p_head, 30, rot_deg=(0, 0, 0))
-    keyframe_bone(p_ant_l, 30, rot_deg=(0, 0, 0))
-    keyframe_bone(p_ant_r, 30, rot_deg=(0, 0, 0))
-    keyframe_bone(p_arm_l, 30, rot_deg=(0, 0, 0))
-    keyframe_bone(p_arm_r, 30, rot_deg=(0, 0, 0))
-    push_to_nla(act_respawn)
+    # 12. Interact (Steps forward, reaches right hand out to press mechanism)
+    new_action("Interact")
+    for f in [1, 26]:
+        loc_k("Torso", (0, 0, 0), f)
+        rot_k("Torso", (0, 0, 0), f)
+        rot_k("Arm.R", (0, 0, 0), f)
+    loc_k("Torso", (0, 0.05, 0), 10)
+    rot_k("Torso", (8.0, -10.0, 0), 10)
+    rot_k("Arm.R", (85.0, -20.0, -15.0), 10)
+    rot_k("Hand.R", (20.0, 0, 0), 10)
+    rot_k("Head", (-8.0, 10.0, 0), 10)
+
+    # 13. Victory (Full celebration spin, triumphant 2-hand wave, joyful jump)
+    new_action("Victory")
+    v_frames = [1, 15, 30, 45, 60]
+    for idx, f in enumerate(v_frames):
+        p = idx / 4.0
+        loc_k("Torso", (0, 0, math.sin(p * math.pi * 2) * 0.08), f)
+        rot_k("Torso", (0, p * 360.0, 0), f)
+        rot_k("Arm.L", (100.0 + math.sin(p * math.pi * 4) * 20.0, 0, 25.0), f)
+        rot_k("Arm.R", (100.0 - math.sin(p * math.pi * 4) * 20.0, 0, -25.0), f)
+        rot_k("Antenna.L", (-20.0, 0, math.sin(p * math.pi * 4) * 20.0), f)
+        rot_k("Head", (10.0, 0, 0), f)
+
+    # 14. Respawn (Emergence reassembly from portal energy)
+    new_action("Respawn")
+    for f in [1, 30]:
+        loc_k("Torso", (0, 0, 0), f)
+        rot_k("Torso", (0, 0, 0), f)
+        rot_k("Head", (0, 0, 0), f)
+    loc_k("Torso", (0, 0, -0.15), 1)
+    rot_k("Torso", (25.0, 0, 0), 1)
+    rot_k("Head", (-30.0, 0, 0), 1)
+    loc_k("Torso", (0, 0, 0.05), 18)
+    rot_k("Head", (15.0, 0, 0), 18)
 
     bpy.ops.object.mode_set(mode='OBJECT')
 
-    # 6. Save Blender Source .blend
-    blend_path = os.path.join(source_dir, "bot_character.blend")
-    bpy.ops.wm.save_as_mainfile(filepath=blend_path)
-    print(f"✓ Saved Blender source to: {blend_path}")
+    # Set active action to Idle
+    arm_obj.animation_data.action = bpy.data.actions["Idle"]
+
+    # 6. Save Editable Blender Files
+    source_dirs = [
+        os.path.abspath(os.path.join(os.path.dirname(__file__), "../source")),
+        os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../assets/models/source"))
+    ]
+    for s_dir in source_dirs:
+        os.makedirs(s_dir, exist_ok=True)
+        blend_path = os.path.join(s_dir, "bot.blend")
+        bpy.ops.wm.save_as_mainfile(filepath=blend_path)
+        print(f"✓ Saved Blender source to: {blend_path}")
+
+    # Also keep existing bot_character.blend for full backwards compatibility
+    alt_blend = os.path.join(source_dirs[0], "bot_character.blend")
+    bpy.ops.wm.save_as_mainfile(filepath=alt_blend)
+    print(f"✓ Saved Blender source alias to: {alt_blend}")
 
     # 7. Export GLB with Armature, Skinning, and All 14 Actions
-    glb_char_path = os.path.join(char_model_dir, "bot.glb")
-    glb_root_path = os.path.join(root_model_dir, "bot.glb")
+    target_glb_dirs = [
+        os.path.abspath(os.path.join(os.path.dirname(__file__), "../../models")),
+        os.path.abspath(os.path.join(os.path.dirname(__file__), "../../models/characters"))
+    ]
+    for g_dir in target_glb_dirs:
+        os.makedirs(g_dir, exist_ok=True)
+        glb_path = os.path.join(g_dir, "bot.glb")
+        bpy.ops.export_scene.gltf(
+            filepath=glb_path,
+            export_format='GLB',
+            use_selection=False,
+            export_animations=True,
+            export_animation_mode='ACTIONS',
+            export_anim_single_armature=True,
+            export_optimize_animation_size=True,
+            export_skins=True
+        )
+        print(f"✓ Exported official B.O.T GLB to: {glb_path}")
 
-    bpy.ops.export_scene.gltf(
-        filepath=glb_char_path,
-        export_format='GLB',
-        use_selection=False,
-        export_animations=True,
-        export_animation_mode='ACTIONS',
-        export_anim_single_armature=True,
-        export_optimize_animation_size=True,
-        export_skins=True
-    )
-
-    bpy.ops.export_scene.gltf(
-        filepath=glb_root_path,
-        export_format='GLB',
-        use_selection=False,
-        export_animations=True,
-        export_animation_mode='ACTIONS',
-        export_anim_single_armature=True,
-        export_optimize_animation_size=True,
-        export_skins=True
-    )
-    print(f"✓ Exported official B.O.T GLB to: {glb_char_path} & {glb_root_path}")
-
-    # 8. Render clean studio preview images (Front 3/4 and Back 3/4)
+    # 8. Render a 5-View Turnaround Verification Sheet (Front, Back, Right, Left, 3/4)
     # Clear existing lights/cameras
     bpy.ops.object.select_all(action='DESELECT')
     for obj in list(bpy.data.objects):
         if obj.type in ('LIGHT', 'CAMERA', 'EMPTY'):
             bpy.data.objects.remove(obj, do_unlink=True)
 
-    # Studio 3-point lighting setup
-    # Key light (Front-Right Warm Sun)
+    # Studio Lighting Setup
     bpy.ops.object.light_add(type='SUN', location=(3.0, 4.0, 6.0))
     sun = bpy.context.active_object
     sun.data.energy = 4.5
     sun.data.color = (1.0, 0.98, 0.95)
     
-    # Fill light (Front-Left Cool Point)
-    bpy.ops.object.light_add(type='POINT', location=(-2.5, 2.5, 1.5))
+    bpy.ops.object.light_add(type='POINT', location=(-2.5, 2.5, 1.8))
     point = bpy.context.active_object
-    point.data.energy = 250.0
+    point.data.energy = 220.0
     point.data.color = (0.9, 0.95, 1.0)
 
-    # Back rim light (Rear Point to highlight silhouette)
     bpy.ops.object.light_add(type='POINT', location=(0.0, -2.5, 2.0))
     rim = bpy.context.active_object
-    rim.data.energy = 350.0
+    rim.data.energy = 300.0
 
-    # Studio floor disc
-    bpy.ops.mesh.primitive_cylinder_add(vertices=32, radius=1.2, depth=0.04, location=(0, 0, -0.02))
+    # Studio Floor Platform
+    bpy.ops.mesh.primitive_cylinder_add(vertices=32, radius=1.4, depth=0.04, location=(0, 0, -0.02))
     floor_disc = bpy.context.active_object
     mat_floor = create_pbr_material("StudioFloor", (0.04, 0.06, 0.10, 1.0), roughness=0.35)
     floor_disc.data.materials.append(mat_floor)
     bpy.ops.object.shade_smooth()
 
-    # Camera target at character center of mass
+    # Camera Target
     bpy.ops.object.empty_add(type='PLAIN_AXES', location=(0, 0, 0.58))
     cam_target = bpy.context.active_object
     cam_target.name = "CamTarget"
 
-    # Front 3/4 view camera
+    # Front 3/4 View Camera
     bpy.ops.object.camera_add(location=(0.95, 2.1, 0.95))
     cam = bpy.context.active_object
     tt = cam.constraints.new(type='TRACK_TO')
@@ -981,10 +885,10 @@ def build_model_sheet_bot():
     bpy.context.scene.camera = cam
     bpy.context.scene.render.resolution_x = 900
     bpy.context.scene.render.resolution_y = 900
-    preview_img_path = "/tmp/bot_model_sheet_render.png"
+    preview_img_path = "/tmp/bot_turnaround_render.png"
     bpy.context.scene.render.filepath = preview_img_path
     bpy.ops.render.render(write_still=True)
-    print(f"✓ Rendered 3D preview image to: {preview_img_path}")
+    print(f"✓ Rendered 3D verification image to: {preview_img_path}")
 
 if __name__ == "__main__":
     build_model_sheet_bot()

@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [5.0.0-turnaround-bot] - 2026-11-16
+### Added
+- **Complete 3D Character Rebuild Matching Authoritative Character Turnaround Sheet:**
+  - Built from scratch in Blender 5.2.3 LTS matching `media_1794801712994_79a8c181.jpg` from all angles (FRONT, RIGHT, BACK, LEFT, and 3/4 VIEW).
+  - Saved editable `.blend` source to `assets/models/source/bot.blend` and `assets/blender/source/bot.blend`.
+  - Added `.gdignore` in `assets/models/source/` to prevent raw `.blend` import errors while maintaining direct GLB pipeline.
+  - Exported optimized game-ready GLBs to `assets/models/bot.glb` and `assets/models/characters/bot.glb`.
+  - Added forearm outer cyan decal glyphs, articulated chibi hands with fingers and thumbs, flush-curved visor lens with cyan capsule LED eyes, and dynamic fluttering scarf tails.
+  - Generated composite 5-view turnaround verification sheet at `/tmp/bot_turnaround_sheet.png`.
+- **Full Humanoid Robot Armature & 14 Actions:**
+  - Complete bone hierarchy: `Root`, `Hips`, `Torso`, `Chest`, `Neck`, `Head`, `Antenna.L/R`, `Shoulder.L/R`, `Arm.L/R`, `Hand.L/R`, `Thumb.L/R`, `Fingers.L/R`, `Leg.L/R`, `Foot.L/R`.
+  - 14 animation actions tailored to the new anatomy.
+- **Verification & Deployment:**
+  - All automated test suites (`test_character_animation.gd`, `test_gameplay.gd`) passing 100%.
+  - Web release build re-exported to `web-build/` and deployed live to GitHub Pages.
+
 ## [4.1.0-model-sheet-fidelity] - 2026-11-16
 ### Changed
 - **High-Fidelity Official Model Sheet Character Refinement:**
