@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.1.0-model-sheet-fidelity] - 2026-11-16
+### Changed
+- **High-Fidelity Official Model Sheet Character Refinement:**
+  - **Recessed Curved Visor & Capsule LED Eyes:** Refined the obsidian faceplate into a curved squircle seamlessly integrated into the helmet opening; elongated the cyan LED eyes into authentic vertical capsule pill shapes with subtle 4.5° inward tilt matching the official sheet.
+  - **Smooth Puffy Scarf & Bib with Cyan Core:** Upgraded the yellow adventure scarf collar with smooth subsurf curvature, front bib with blue border inlay and glowing cyan triangle core, and dual flutter tails.
+  - **Refined Proportions & Silhouettes:** Optimized ivory helmet dome, royal blue crown cap arching over the brow, yellow sprout antenna fin, and boots with rounded bulbous golden yellow toe caps, white collars, and royal blue soles.
+  - **Studio 3-Point Lighting & Floor Backdrop:** Added automated studio render pipeline producing high-resolution renders of the new hero character.
+- **Export & Verification:**
+  - Automated test suites (`test_character_animation.gd` and `test_gameplay.gd`) passing 100%.
+  - Web release build re-exported to `web-build/` and ready for live GitHub Pages deployment.
+
 ## [4.0.0-official-bot] - 2026-11-16
 ### Added
 - **Official Character Model Sheet B.O.T Production in Blender 5.2.3 LTS:**

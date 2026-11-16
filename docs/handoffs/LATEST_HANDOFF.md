@@ -7,7 +7,7 @@ Tiny Planet is an autonomous 3D adventure platformer developed for the web using
 - **Phase:** Phase 4: Official Model Sheet Character Production ("B.O.T Explorer with Golden Scarf & Sprout Antenna") — Completed & Verified!
 - **Public URL:** https://cuong2000aa.github.io/tiny-planet/
 - **GitHub Repository:** https://github.com/Cuong2000aa/tiny-planet
-- **Milestone Tag:** `v4.0-official-bot`
+- **Milestone Tag:** `v4.1-model-sheet-bot`
 
 ## 3. Completed Work in Phase 4
 1. **Model Sheet Fidelity:**
