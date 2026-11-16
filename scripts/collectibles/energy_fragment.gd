@@ -35,6 +35,8 @@ func _on_body_entered(body: Node3D) -> void:
 	if _is_collected:
 		return
 	if body is CharacterBody3D:
+		if body.has_method("play_collect_animation"):
+			body.play_collect_animation()
 		_collect()
 
 func _collect() -> void:
