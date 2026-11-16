@@ -1,6 +1,6 @@
 """
-B.O.T Production 3D Character Builder (20 Articulated Component Objects)
-Tiny Planet - Phase 6 Production Pipeline
+B.O.T Production 3D Character Builder — Premium Game Character Pass
+Tiny Planet - Phase 6.5 Production Pipeline
 Authoritative Visual Reference: Character Turnaround Sheet (~2.5 Heads Tall, Astro Bot Inspired)
 Engine: Godot 4.7.1 Stable Standard | Blender 5.2.3 LTS
 """
@@ -9,16 +9,17 @@ import bpy
 import bmesh
 import math
 from mathutils import Vector, Matrix
+import os
 
 # Clear scene
 bpy.ops.wm.read_factory_settings(use_empty=True)
 
 # ---------------------------------------------------------
-# 1. PBR Materials
+# 1. Premium PBR Materials (Console-Quality Adventure Stylized)
 # ---------------------------------------------------------
 materials = {}
 
-def get_mat(name, base_color, metallic=0.0, roughness=0.3, emission_color=(0,0,0,1), emission_strength=0.0):
+def get_mat(name, base_color, metallic=0.0, roughness=0.3, emission_color=(0,0,0,1), emission_strength=0.0, clearcoat=0.0):
     if name in materials:
         return materials[name]
     mat = bpy.data.materials.new(name=name)
@@ -33,15 +34,19 @@ def get_mat(name, base_color, metallic=0.0, roughness=0.3, emission_color=(0,0,0
             bsdf.inputs['Emission Strength'].default_value = emission_strength
         elif 'Emission' in bsdf.inputs:
             bsdf.inputs['Emission'].default_value = emission_color
+        if 'Coat Weight' in bsdf.inputs:
+            bsdf.inputs['Coat Weight'].default_value = clearcoat
+        elif 'Clearcoat' in bsdf.inputs:
+            bsdf.inputs['Clearcoat'].default_value = clearcoat
     materials[name] = mat
     return mat
 
-mat_white = get_mat("Mat_Pearl_White", (0.95, 0.96, 0.98, 1.0), metallic=0.06, roughness=0.18)
-mat_blue = get_mat("Mat_Royal_Blue", (0.04, 0.26, 0.86, 1.0), metallic=0.15, roughness=0.22)
-mat_yellow = get_mat("Mat_Golden_Yellow", (0.98, 0.72, 0.08, 1.0), metallic=0.0, roughness=0.30)
-mat_visor = get_mat("Mat_Glossy_Visor", (0.010, 0.012, 0.018, 1.0), metallic=0.92, roughness=0.02)
+mat_white = get_mat("Mat_Pearl_White", (0.95, 0.95, 0.97, 1.0), metallic=0.04, roughness=0.18, clearcoat=0.35)
+mat_blue = get_mat("Mat_Royal_Blue", (0.05, 0.28, 0.86, 1.0), metallic=0.12, roughness=0.22, clearcoat=0.20)
+mat_yellow = get_mat("Mat_Golden_Yellow", (0.98, 0.72, 0.08, 1.0), metallic=0.0, roughness=0.35)
+mat_visor = get_mat("Mat_Glossy_Visor", (0.010, 0.012, 0.018, 1.0), metallic=0.92, roughness=0.02, clearcoat=1.0)
 mat_cyan = get_mat("Mat_Cyan_Emissive", (0.2, 0.88, 1.0, 1.0), metallic=0.0, roughness=0.1, emission_color=(0.25, 0.92, 1.0, 1.0), emission_strength=5.5)
-mat_navy = get_mat("Mat_Graphite_Navy", (0.12, 0.14, 0.18, 1.0), metallic=0.45, roughness=0.38)
+mat_navy = get_mat("Mat_Graphite_Navy", (0.10, 0.12, 0.16, 1.0), metallic=0.55, roughness=0.32)
 
 # ---------------------------------------------------------
 # 2. Geometry Builders
@@ -119,16 +124,16 @@ def create_smooth_sphere(name, radius, loc, mat, segs=28, rings=20, scale=(1,1,1
     return obj
 
 # ---------------------------------------------------------
-# 3. Build 20 Discrete Production Articulated Components
+# 3. Build 20 Premium Game Character Components
 # Note: Forward is -Y (converts cleanly to Godot -Z forward)
 # Total height: ~1.02m, fits 1.15m CapsuleShape3D
 # ---------------------------------------------------------
 
-# --- 1. BOT_Head ---
-helmet = create_beveled_box("BOT_Head", (0.44, 0.40, 0.36), (0.0, 0.0, 0.79), mat_white, bevel_width=0.08, bevel_segs=5)
+# ==================== 1. BOT_Head ====================
+helmet = create_beveled_box("BOT_Head", (0.43, 0.39, 0.35), (0.0, 0.0, 0.785), mat_white, bevel_width=0.08, bevel_segs=5)
 
-# Cut recessed cavity into front of helmet
-pocket_cutter = create_beveled_box("PocketCutter", (0.34, 0.12, 0.23), (0.0, -0.165, 0.79), None, bevel_width=0.035, bevel_segs=4)
+# Cut recessed television-screen visor cavity in front face (-Y)
+pocket_cutter = create_beveled_box("PocketCutter", (0.33, 0.12, 0.225), (0.0, -0.165, 0.785), None, bevel_width=0.035, bevel_segs=4)
 bool_mod = helmet.modifiers.new("VisorPocket", 'BOOLEAN')
 bool_mod.operation = 'DIFFERENCE'
 bool_mod.object = pocket_cutter
@@ -136,15 +141,17 @@ bpy.context.view_layer.objects.active = helmet
 bpy.ops.object.modifier_apply(modifier="VisorPocket")
 bpy.data.objects.remove(pocket_cutter, do_unlink=True)
 
-# Inset glossy black visor screen inside the recessed cavity
-visor = create_beveled_box("Part_Visor", (0.33, 0.06, 0.22), (0.0, -0.165, 0.79), mat_visor, bevel_width=0.032, bevel_segs=4)
+# Obsidian curved visor lens seated flush inside the recessed bezel
+visor = create_beveled_box("Part_Visor", (0.32, 0.055, 0.215), (0.0, -0.165, 0.785), mat_visor, bevel_width=0.032, bevel_segs=4)
 
-# Glowing cyan capsule eyes flush with the visor
-eye_l = create_smooth_sphere("Part_Eye_L", 0.035, (-0.082, -0.192, 0.795), mat_cyan, segs=20, rings=16, scale=(0.85, 0.12, 1.45))
-eye_r = create_smooth_sphere("Part_Eye_R", 0.035, (0.082, -0.192, 0.795), mat_cyan, segs=20, rings=16, scale=(0.85, 0.12, 1.45))
+# Expressive vertical cyan capsule LED eyes tilted 3 degrees inward
+eye_l = create_smooth_sphere("Part_Eye_L", 0.035, (-0.078, -0.190, 0.790), mat_cyan, segs=20, rings=16, scale=(0.85, 0.12, 1.45))
+eye_l.rotation_euler = (0, 0, math.radians(-3))
+eye_r = create_smooth_sphere("Part_Eye_R", 0.035, (0.078, -0.190, 0.790), mat_cyan, segs=20, rings=16, scale=(0.85, 0.12, 1.45))
+eye_r.rotation_euler = (0, 0, math.radians(3))
 
-# Royal blue curved crown armor cap covering top of helmet
-crown = create_smooth_sphere("Part_Crown", 0.235, (0.0, 0.015, 0.88), mat_blue, segs=32, rings=24, scale=(0.95, 0.88, 0.45))
+# Royal blue curved crown armor cap wrapping over top and temples
+crown = create_smooth_sphere("Part_Crown", 0.235, (0.0, 0.035, 0.865), mat_blue, segs=32, rings=24, scale=(0.95, 0.90, 0.50))
 
 bpy.ops.object.select_all(action='DESELECT')
 for p in [crown, visor, eye_l, eye_r]:
@@ -155,9 +162,9 @@ bpy.ops.object.join()
 BOT_Head = helmet
 BOT_Head.name = "BOT_Head"
 
-# --- 2. BOT_Antenna ---
-stem = create_smooth_cylinder("Part_AntStem", 0.014, 0.08, (0.0, 0.02, 1.005), mat_yellow, rot=(math.radians(22), 0, 0), segs=16)
-fin = create_beveled_box("Part_AntFin", (0.022, 0.09, 0.06), (0.0, 0.055, 1.065), mat_yellow, bevel_width=0.015, bevel_segs=3)
+# ==================== 2. BOT_Antenna ====================
+stem = create_smooth_cylinder("Part_AntStem", 0.013, 0.08, (0.0, 0.02, 1.00), mat_yellow, rot=(math.radians(22), 0, 0), segs=16)
+fin = create_beveled_box("Part_AntFin", (0.022, 0.09, 0.06), (0.0, 0.055, 1.06), mat_yellow, bevel_width=0.015, bevel_segs=3)
 fin.rotation_euler = (math.radians(38), 0, 0)
 bpy.ops.object.select_all(action='DESELECT')
 stem.select_set(True)
@@ -167,12 +174,12 @@ bpy.ops.object.join()
 BOT_Antenna = fin
 BOT_Antenna.name = "BOT_Antenna"
 
-# --- 3 & 4. BOT_Ear_L and BOT_Ear_R ---
+# ==================== 3 & 4. BOT_Ear_L and BOT_Ear_R ====================
 def build_ear(side, sign):
-    base = create_smooth_cylinder(f"BOT_Ear_{side}", 0.092, 0.032, (sign * 0.228, -0.01, 0.79), mat_yellow, rot=(0, math.radians(90), 0), segs=28, bevel_width=0.008)
-    housing = create_smooth_cylinder(f"Part_EarHouse_{side}", 0.076, 0.024, (sign * 0.238, -0.01, 0.79), mat_blue, rot=(0, math.radians(90), 0), segs=28, bevel_width=0.005)
-    ring = create_smooth_cylinder(f"Part_EarRing_{side}", 0.055, 0.014, (sign * 0.245, -0.01, 0.79), mat_cyan, rot=(0, math.radians(90), 0), segs=28, bevel_width=0.002)
-    hub = create_smooth_cylinder(f"Part_EarHub_{side}", 0.032, 0.016, (sign * 0.252, -0.01, 0.79), mat_navy, rot=(0, math.radians(90), 0), segs=20)
+    base = create_smooth_cylinder(f"BOT_Ear_{side}", 0.090, 0.032, (sign * 0.222, -0.01, 0.785), mat_yellow, rot=(0, math.radians(90), 0), segs=28, bevel_width=0.008)
+    housing = create_smooth_cylinder(f"Part_EarHouse_{side}", 0.075, 0.024, (sign * 0.232, -0.01, 0.785), mat_blue, rot=(0, math.radians(90), 0), segs=28, bevel_width=0.005)
+    ring = create_smooth_cylinder(f"Part_EarRing_{side}", 0.054, 0.014, (sign * 0.239, -0.01, 0.785), mat_cyan, rot=(0, math.radians(90), 0), segs=28, bevel_width=0.002)
+    hub = create_smooth_cylinder(f"Part_EarHub_{side}", 0.030, 0.016, (sign * 0.245, -0.01, 0.785), mat_navy, rot=(0, math.radians(90), 0), segs=20)
     
     bpy.ops.object.select_all(action='DESELECT')
     for p in [housing, ring, hub]:
@@ -186,45 +193,215 @@ def build_ear(side, sign):
 BOT_Ear_L = build_ear("L", 1.0)
 BOT_Ear_R = build_ear("R", -1.0)
 
-# --- 5. BOT_Scarf ---
-cowl = create_smooth_cylinder("BOT_Scarf", 0.175, 0.075, (0.0, 0.0, 0.615), mat_yellow, segs=28, bevel_width=0.028)
-bib = create_beveled_box("Part_ScarfBib", (0.13, 0.035, 0.10), (0.0, -0.145, 0.56), mat_yellow, bevel_width=0.016, bevel_segs=3, taper_bottom=(0.4, 0.8))
-badge_bg = create_beveled_box("Part_ScarfBadgeB", (0.055, 0.015, 0.045), (0.0, -0.165, 0.565), mat_blue, bevel_width=0.006, bevel_segs=2, taper_bottom=(0.3, 0.8))
-badge_cyan = create_beveled_box("Part_ScarfBadgeC", (0.032, 0.01, 0.028), (0.0, -0.172, 0.565), mat_cyan, bevel_width=0.004, bevel_segs=2, taper_bottom=(0.3, 0.8))
-tail1 = create_beveled_box("Part_ScarfTail1", (0.045, 0.15, 0.022), (0.12, 0.14, 0.59), mat_yellow, bevel_width=0.008)
-tail1.rotation_euler = (math.radians(-24), math.radians(12), math.radians(26))
-tail2 = create_beveled_box("Part_ScarfTail2", (0.038, 0.18, 0.018), (0.15, 0.17, 0.53), mat_yellow, bevel_width=0.008)
-tail2.rotation_euler = (math.radians(-34), math.radians(18), math.radians(34))
+# ==================== 5. BOT_Scarf (Draped Fabric Adventure Scarf) ====================
+bm_cowl = bmesh.new()
+segments = 24
+rings = 4
+for ring_idx in range(rings):
+    z = 0.585 + ring_idx * 0.022
+    r_outer = 0.170 + (0.012 if ring_idx in [1, 2] else 0.0)
+    for seg in range(segments):
+        angle = seg / segments * 2.0 * math.pi
+        y_bias = -0.018 * math.cos(angle)
+        fold = 0.010 * math.sin(angle * 3)
+        x = (r_outer + fold) * math.sin(angle)
+        y = (r_outer * 0.88 + y_bias + fold) * math.cos(angle)
+        bm_cowl.verts.new((x, y, z))
+
+bm_cowl.verts.ensure_lookup_table()
+for ring_idx in range(rings - 1):
+    for seg in range(segments):
+        next_seg = (seg + 1) % segments
+        bm_cowl.faces.new((
+            bm_cowl.verts[ring_idx * segments + seg],
+            bm_cowl.verts[ring_idx * segments + next_seg],
+            bm_cowl.verts[(ring_idx + 1) * segments + next_seg],
+            bm_cowl.verts[(ring_idx + 1) * segments + seg]
+        ))
+
+mesh_cowl = bpy.data.meshes.new("ScarfCowl")
+bm_cowl.to_mesh(mesh_cowl)
+bm_cowl.free()
+cowl = bpy.data.objects.new("BOT_Scarf", mesh_cowl)
+bpy.context.collection.objects.link(cowl)
+cowl.data.materials.append(mat_yellow)
+sol_cowl = cowl.modifiers.new("Solidify", 'SOLIDIFY')
+sol_cowl.thickness = 0.016
+sol_cowl.offset = 1.0
+bpy.context.view_layer.objects.active = cowl
+bpy.ops.object.modifier_apply(modifier="Solidify")
+
+# Front folded bandana bib pointing down (-Y)
+bm_bib = bmesh.new()
+v_top_l = bm_bib.verts.new((-0.072, -0.150, 0.62))
+v_top_r = bm_bib.verts.new((0.072, -0.150, 0.62))
+v_mid_l = bm_bib.verts.new((-0.062, -0.160, 0.57))
+v_mid_r = bm_bib.verts.new((0.062, -0.160, 0.57))
+v_tip   = bm_bib.verts.new((0.0, -0.155, 0.515))
+bm_bib.faces.new((v_top_l, v_top_r, v_mid_r, v_mid_l))
+bm_bib.faces.new((v_mid_l, v_mid_r, v_tip))
+mesh_bib = bpy.data.meshes.new("BibMesh")
+bm_bib.to_mesh(mesh_bib)
+bm_bib.free()
+obj_bib = bpy.data.objects.new("Part_Bib", mesh_bib)
+bpy.context.collection.objects.link(obj_bib)
+obj_bib.data.materials.append(mat_yellow)
+sol_bib = obj_bib.modifiers.new("Solidify", 'SOLIDIFY')
+sol_bib.thickness = 0.012
+bpy.context.view_layer.objects.active = obj_bib
+bpy.ops.object.modifier_apply(modifier="Solidify")
+
+# Inverted blue triangle badge on bib
+bm_emb = bmesh.new()
+bmesh.ops.create_cone(bm_emb, cap_ends=True, cap_tris=False, segments=3, radius1=0.034, radius2=0.034, depth=0.012)
+for v in bm_emb.verts:
+    v.co.z, v.co.y = v.co.y, -v.co.z
+mesh_emb = bpy.data.meshes.new("EmbMesh")
+bm_emb.to_mesh(mesh_emb)
+bm_emb.free()
+obj_emb = bpy.data.objects.new("Part_ScarfEmb", mesh_emb)
+bpy.context.collection.objects.link(obj_emb)
+obj_emb.location = (0.0, -0.166, 0.565)
+obj_emb.rotation_euler = (0, 0, math.radians(180))
+obj_emb.data.materials.append(mat_blue)
+
+# Glowing cyan inner triangle
+bm_core = bmesh.new()
+bmesh.ops.create_cone(bm_core, cap_ends=True, cap_tris=False, segments=3, radius1=0.020, radius2=0.020, depth=0.014)
+for v in bm_core.verts:
+    v.co.z, v.co.y = v.co.y, -v.co.z
+mesh_core = bpy.data.meshes.new("CoreMesh")
+bm_core.to_mesh(mesh_core)
+bm_core.free()
+obj_core = bpy.data.objects.new("Part_ScarfCore", mesh_core)
+bpy.context.collection.objects.link(obj_core)
+obj_core.location = (0.0, -0.171, 0.565)
+obj_core.rotation_euler = (0, 0, math.radians(180))
+obj_core.data.materials.append(mat_cyan)
+
+# Trailing fluttering scarf tails (+Y, left side)
+tails = []
+for idx, (ox, oy, oz, rot_z, length) in enumerate([(0.11, 0.12, 0.61, 26, 0.18), (0.14, 0.14, 0.56, 34, 0.22)]):
+    bm_t = bmesh.new()
+    segs = 6
+    w = 0.042
+    for s in range(segs):
+        t = s / (segs - 1)
+        curv_x = math.sin(t * math.pi) * 0.025
+        curv_z = -t * 0.07 + math.sin(t * 2 * math.pi) * 0.015
+        curv_y = t * length
+        bm_t.verts.new((-w * 0.5 * (1.0 - t * 0.3) + curv_x, curv_y, curv_z))
+        bm_t.verts.new((w * 0.5 * (1.0 - t * 0.3) + curv_x, curv_y, curv_z))
+    bm_t.verts.ensure_lookup_table()
+    for s in range(segs - 1):
+        bm_t.faces.new((bm_t.verts[s * 2], bm_t.verts[s * 2 + 1], bm_t.verts[(s + 1) * 2 + 1], bm_t.verts[(s + 1) * 2]))
+    m_t = bpy.data.meshes.new(f"Tail_{idx}")
+    bm_t.to_mesh(m_t)
+    bm_t.free()
+    o_t = bpy.data.objects.new(f"Part_Tail_{idx}", m_t)
+    bpy.context.collection.objects.link(o_t)
+    o_t.location = (ox, oy, oz)
+    o_t.rotation_euler = (math.radians(-16), math.radians(10), math.radians(rot_z))
+    o_t.data.materials.append(mat_yellow)
+    sol = o_t.modifiers.new("Solidify", 'SOLIDIFY')
+    sol.thickness = 0.008
+    bpy.context.view_layer.objects.active = o_t
+    bpy.ops.object.modifier_apply(modifier="Solidify")
+    tails.append(o_t)
 
 bpy.ops.object.select_all(action='DESELECT')
-for p in [bib, badge_bg, badge_cyan, tail1, tail2]:
+for p in [obj_bib, obj_emb, obj_core] + tails:
     p.select_set(True)
 cowl.select_set(True)
 bpy.context.view_layer.objects.active = cowl
 bpy.ops.object.join()
 BOT_Scarf = cowl
 BOT_Scarf.name = "BOT_Scarf"
+for p in BOT_Scarf.data.polygons:
+    p.use_smooth = True
 
-# --- 6. BOT_Chest_Armor ---
-chest = create_beveled_box("BOT_Chest_Armor", (0.28, 0.21, 0.20), (0.0, -0.01, 0.495), mat_white, bevel_width=0.045, bevel_segs=4, taper_bottom=(0.82, 0.88))
-core_rim = create_beveled_box("Part_CoreRim", (0.085, 0.02, 0.075), (0.0, -0.122, 0.465), mat_blue, bevel_width=0.008, bevel_segs=2, taper_bottom=(1.6, 0.8))
-core_tri = create_beveled_box("Part_CoreTri", (0.055, 0.015, 0.05), (0.0, -0.130, 0.465), mat_cyan, bevel_width=0.006, bevel_segs=2, taper_bottom=(1.6, 0.8))
+# ==================== 6. BOT_Chest_Armor (Sculpted Breastplate & Reactor) ====================
+spine = create_beveled_box("Part_InnerChassis", (0.20, 0.16, 0.18), (0.0, 0.0, 0.475), mat_navy, bevel_width=0.015, bevel_segs=3)
+
+bm_ch = bmesh.new()
+pts = [
+    # Top front rim (under scarf bib)
+    (-0.135, -0.115, 0.54), (0.135, -0.115, 0.54),
+    # Pectoral outer ridge
+    (-0.145, -0.128, 0.485), (0.145, -0.128, 0.485),
+    # Lower waist rim
+    (-0.105, -0.105, 0.42), (0.105, -0.105, 0.42),
+    # Upper flank
+    (-0.155, -0.02, 0.51), (0.155, -0.02, 0.51),
+    # Lower flank
+    (-0.125, -0.01, 0.42), (0.125, -0.01, 0.42),
+]
+vl = [bm_ch.verts.new(p) for p in pts]
+bm_ch.faces.new((vl[0], vl[1], vl[3], vl[2]))
+bm_ch.faces.new((vl[2], vl[3], vl[5], vl[4]))
+bm_ch.faces.new((vl[0], vl[2], vl[6]))
+bm_ch.faces.new((vl[2], vl[4], vl[8], vl[6]))
+bm_ch.faces.new((vl[1], vl[7], vl[3]))
+bm_ch.faces.new((vl[3], vl[7], vl[9], vl[5]))
+
+mesh_ch = bpy.data.meshes.new("Breastplate")
+bm_ch.to_mesh(mesh_ch)
+bm_ch.free()
+obj_ch = bpy.data.objects.new("BOT_Chest_Armor", mesh_ch)
+bpy.context.collection.objects.link(obj_ch)
+obj_ch.data.materials.append(mat_white)
+sol_ch = obj_ch.modifiers.new("Solidify", 'SOLIDIFY')
+sol_ch.thickness = 0.020
+sol_ch.offset = 1.0
+bev_ch = obj_ch.modifiers.new("Bevel", 'BEVEL')
+bev_ch.width = 0.010
+bev_ch.segments = 3
+bpy.context.view_layer.objects.active = obj_ch
+bpy.ops.object.modifier_apply(modifier="Solidify")
+bpy.ops.object.modifier_apply(modifier="Bevel")
+for p in obj_ch.data.polygons:
+    p.use_smooth = True
+
+# Glowing cyan triangular reactor power rune on chest (Upright ▲)
+bm_r_rim = bmesh.new()
+bmesh.ops.create_cone(bm_r_rim, cap_ends=True, cap_tris=False, segments=3, radius1=0.038, radius2=0.038, depth=0.016)
+for v in bm_r_rim.verts:
+    v.co.z, v.co.y = v.co.y, -v.co.z
+mesh_r_rim = bpy.data.meshes.new("ReactorRim")
+bm_r_rim.to_mesh(mesh_r_rim)
+bm_r_rim.free()
+obj_r_rim = bpy.data.objects.new("Part_ReactorRim", mesh_r_rim)
+bpy.context.collection.objects.link(obj_r_rim)
+obj_r_rim.location = (0.0, -0.136, 0.468)
+obj_r_rim.data.materials.append(mat_blue)
+
+bm_r_core = bmesh.new()
+bmesh.ops.create_cone(bm_r_core, cap_ends=True, cap_tris=False, segments=3, radius1=0.024, radius2=0.024, depth=0.018)
+for v in bm_r_core.verts:
+    v.co.z, v.co.y = v.co.y, -v.co.z
+mesh_r_core = bpy.data.meshes.new("ReactorCore")
+bm_r_core.to_mesh(mesh_r_core)
+bm_r_core.free()
+obj_r_core = bpy.data.objects.new("Part_ReactorCore", mesh_r_core)
+bpy.context.collection.objects.link(obj_r_core)
+obj_r_core.location = (0.0, -0.142, 0.468)
+obj_r_core.data.materials.append(mat_cyan)
 
 bpy.ops.object.select_all(action='DESELECT')
-for p in [core_rim, core_tri]:
+for p in [spine, obj_r_rim, obj_r_core]:
     p.select_set(True)
-chest.select_set(True)
-bpy.context.view_layer.objects.active = chest
+obj_ch.select_set(True)
+bpy.context.view_layer.objects.active = obj_ch
 bpy.ops.object.join()
-BOT_Chest_Armor = chest
+BOT_Chest_Armor = obj_ch
 BOT_Chest_Armor.name = "BOT_Chest_Armor"
 
-# --- 7. BOT_Backpack ---
-pack = create_beveled_box("BOT_Backpack", (0.18, 0.08, 0.16), (0.0, 0.125, 0.50), mat_blue, bevel_width=0.03, bevel_segs=3)
-pack_core = create_beveled_box("Part_PackCore", (0.065, 0.02, 0.06), (0.0, 0.168, 0.50), mat_cyan, bevel_width=0.008, taper_bottom=(0.3, 0.8))
-pack_strap_l = create_beveled_box("Part_PackStrapL", (0.025, 0.06, 0.05), (0.075, 0.10, 0.56), mat_yellow, bevel_width=0.006)
+# ==================== 7. BOT_Backpack ====================
+pack = create_beveled_box("BOT_Backpack", (0.18, 0.08, 0.16), (0.0, 0.122, 0.495), mat_blue, bevel_width=0.028, bevel_segs=3)
+pack_core = create_beveled_box("Part_PackCore", (0.065, 0.02, 0.06), (0.0, 0.165, 0.495), mat_cyan, bevel_width=0.008, taper_bottom=(0.3, 0.8))
+pack_strap_l = create_beveled_box("Part_PackStrapL", (0.024, 0.06, 0.05), (0.075, 0.095, 0.55), mat_yellow, bevel_width=0.006)
 pack_strap_l.rotation_euler = (math.radians(-30), 0, math.radians(-15))
-pack_strap_r = create_beveled_box("Part_PackStrapR", (0.025, 0.06, 0.05), (-0.075, 0.10, 0.56), mat_yellow, bevel_width=0.006)
+pack_strap_r = create_beveled_box("Part_PackStrapR", (0.024, 0.06, 0.05), (-0.075, 0.095, 0.55), mat_yellow, bevel_width=0.006)
 pack_strap_r.rotation_euler = (math.radians(-30), 0, math.radians(15))
 
 bpy.ops.object.select_all(action='DESELECT')
@@ -236,18 +413,20 @@ bpy.ops.object.join()
 BOT_Backpack = pack
 BOT_Backpack.name = "BOT_Backpack"
 
-# --- 8. BOT_Pelvis ---
-BOT_Pelvis = create_beveled_box("BOT_Pelvis", (0.22, 0.17, 0.08), (0.0, 0.0, 0.375), mat_navy, bevel_width=0.025, bevel_segs=3, taper_bottom=(0.85, 0.85))
+# ==================== 8. BOT_Pelvis ====================
+BOT_Pelvis = create_beveled_box("BOT_Pelvis", (0.22, 0.16, 0.08), (0.0, 0.0, 0.380), mat_navy, bevel_width=0.024, bevel_segs=3, taper_bottom=(0.85, 0.85))
 
-# --- 9 & 10. BOT_Arm_L and BOT_Arm_R ---
+# ==================== 9 & 10. BOT_Arm_L and BOT_Arm_R ====================
 def build_upper_arm(side, sign):
-    joint = create_smooth_sphere(f"BOT_Arm_{side}", 0.046, (sign * 0.175, 0.0, 0.50), mat_navy, segs=20, rings=16)
-    paul = create_smooth_sphere(f"Part_Paul_{side}", 0.056, (sign * 0.180, 0.0, 0.525), mat_white, segs=20, rings=16, scale=(1.08, 1.08, 0.8))
-    bicep = create_smooth_cylinder(f"Part_Bicep_{side}", 0.038, 0.07, (sign * 0.182, 0.0, 0.445), mat_white, segs=20, bevel_width=0.006)
-    elbow = create_smooth_sphere(f"Part_Elbow_{side}", 0.036, (sign * 0.185, 0.0, 0.40), mat_navy, segs=16, rings=12)
+    joint = create_smooth_sphere(f"BOT_Arm_{side}", 0.046, (sign * 0.180, 0.0, 0.505), mat_navy, segs=20, rings=16)
+    paul = create_smooth_sphere(f"Part_Paul_{side}", 0.058, (sign * 0.185, 0.0, 0.530), mat_white, segs=24, rings=18, scale=(1.12, 1.10, 0.82))
+    flange = create_beveled_box(f"Part_PaulFlange_{side}", (0.045, 0.075, 0.045), (sign * 0.220, 0.0, 0.515), mat_white, bevel_width=0.010)
+    bicep = create_smooth_cylinder(f"Part_Bicep_{side}", 0.038, 0.07, (sign * 0.185, 0.0, 0.445), mat_white, segs=20, bevel_width=0.006)
+    elbow = create_smooth_sphere(f"Part_Elbow_{side}", 0.036, (sign * 0.188, 0.0, 0.400), mat_navy, segs=16, rings=12)
+    pivot = create_smooth_cylinder(f"Part_ElbowPin_{side}", 0.018, 0.014, (sign * 0.215, 0.0, 0.400), mat_blue, rot=(0, math.radians(90), 0), segs=16)
     
     bpy.ops.object.select_all(action='DESELECT')
-    for p in [paul, bicep, elbow]:
+    for p in [paul, flange, bicep, elbow, pivot]:
         p.select_set(True)
     joint.select_set(True)
     bpy.context.view_layer.objects.active = joint
@@ -258,11 +437,11 @@ def build_upper_arm(side, sign):
 BOT_Arm_L = build_upper_arm("L", 1.0)
 BOT_Arm_R = build_upper_arm("R", -1.0)
 
-# --- 11 & 12. BOT_Forearm_L and BOT_Forearm_R ---
+# ==================== 11 & 12. BOT_Forearm_L and BOT_Forearm_R ====================
 def build_forearm(side, sign):
-    gauntlet = create_smooth_cylinder(f"BOT_Forearm_{side}", 0.048, 0.10, (sign * 0.190, 0.0, 0.335), mat_white, segs=24, bevel_width=0.008, radius2=0.042)
-    cuff = create_smooth_cylinder(f"Part_Cuff_{side}", 0.049, 0.022, (sign * 0.190, 0.0, 0.29), mat_blue, segs=24, bevel_width=0.004)
-    glyph = create_beveled_box(f"Part_Glyph_{side}", (0.008, 0.025, 0.025), (sign * 0.237, 0.0, 0.335), mat_cyan, bevel_width=0.003)
+    gauntlet = create_smooth_cylinder(f"BOT_Forearm_{side}", 0.048, 0.095, (sign * 0.192, 0.0, 0.335), mat_white, segs=24, bevel_width=0.008, radius2=0.042)
+    cuff = create_smooth_cylinder(f"Part_Cuff_{side}", 0.049, 0.022, (sign * 0.192, 0.0, 0.290), mat_blue, segs=24, bevel_width=0.004)
+    glyph = create_beveled_box(f"Part_Glyph_{side}", (0.008, 0.024, 0.024), (sign * 0.238, 0.0, 0.335), mat_cyan, bevel_width=0.003)
     
     bpy.ops.object.select_all(action='DESELECT')
     for p in [cuff, glyph]:
@@ -276,13 +455,13 @@ def build_forearm(side, sign):
 BOT_Forearm_L = build_forearm("L", 1.0)
 BOT_Forearm_R = build_forearm("R", -1.0)
 
-# --- 13 & 14. BOT_Hand_L and BOT_Hand_R ---
+# ==================== 13 & 14. BOT_Hand_L and BOT_Hand_R ====================
 def build_hand(side, sign):
-    palm = create_beveled_box(f"BOT_Hand_{side}", (0.065, 0.06, 0.065), (sign * 0.190, 0.0, 0.24), mat_navy, bevel_width=0.016, bevel_segs=3)
-    thumb = create_beveled_box(f"Part_Thumb_{side}", (0.026, 0.035, 0.038), (sign * (0.190 - sign * 0.028), -0.022, 0.235), mat_navy, bevel_width=0.008)
+    palm = create_beveled_box(f"BOT_Hand_{side}", (0.065, 0.06, 0.065), (sign * 0.192, 0.0, 0.240), mat_navy, bevel_width=0.016, bevel_segs=3)
+    thumb = create_beveled_box(f"Part_Thumb_{side}", (0.026, 0.035, 0.038), (sign * (0.192 - sign * 0.028), -0.022, 0.235), mat_navy, bevel_width=0.008)
     thumb.rotation_euler = (math.radians(-25), 0, math.radians(-sign * 30))
-    fingers = create_beveled_box(f"Part_Fingers_{side}", (0.05, 0.045, 0.035), (sign * 0.190, -0.015, 0.20), mat_navy, bevel_width=0.01)
-    backplate = create_beveled_box(f"Part_Backplate_{side}", (0.055, 0.015, 0.055), (sign * 0.190, 0.032, 0.24), mat_white, bevel_width=0.006)
+    fingers = create_beveled_box(f"Part_Fingers_{side}", (0.05, 0.045, 0.035), (sign * 0.192, -0.015, 0.200), mat_navy, bevel_width=0.010)
+    backplate = create_beveled_box(f"Part_Backplate_{side}", (0.055, 0.015, 0.055), (sign * 0.192, 0.032, 0.240), mat_white, bevel_width=0.006)
     
     bpy.ops.object.select_all(action='DESELECT')
     for p in [thumb, fingers, backplate]:
@@ -296,14 +475,15 @@ def build_hand(side, sign):
 BOT_Hand_L = build_hand("L", 1.0)
 BOT_Hand_R = build_hand("R", -1.0)
 
-# --- 15 & 16. BOT_Thigh_L and BOT_Thigh_R ---
+# ==================== 15 & 16. BOT_Thigh_L and BOT_Thigh_R ====================
 def build_thigh(side, sign):
     hip = create_smooth_sphere(f"BOT_Thigh_{side}", 0.046, (sign * 0.095, 0.0, 0.345), mat_navy, segs=20, rings=16)
     armor = create_smooth_cylinder(f"Part_ThighArmor_{side}", 0.052, 0.08, (sign * 0.095, 0.0, 0.295), mat_white, segs=24, bevel_width=0.008)
     knee = create_smooth_sphere(f"Part_Knee_{side}", 0.042, (sign * 0.095, 0.0, 0.240), mat_navy, segs=20, rings=16)
+    kneecap = create_beveled_box(f"Part_KneeCap_{side}", (0.05, 0.03, 0.04), (sign * 0.095, -0.038, 0.240), mat_white, bevel_width=0.008)
     
     bpy.ops.object.select_all(action='DESELECT')
-    for p in [armor, knee]:
+    for p in [armor, knee, kneecap]:
         p.select_set(True)
     hip.select_set(True)
     bpy.context.view_layer.objects.active = hip
@@ -314,7 +494,7 @@ def build_thigh(side, sign):
 BOT_Thigh_L = build_thigh("L", 1.0)
 BOT_Thigh_R = build_thigh("R", -1.0)
 
-# --- 17 & 18. BOT_Shin_L and BOT_Shin_R ---
+# ==================== 17 & 18. BOT_Shin_L and BOT_Shin_R ====================
 def build_shin(side, sign):
     shin = create_smooth_cylinder(f"BOT_Shin_{side}", 0.058, 0.10, (sign * 0.095, -0.005, 0.175), mat_white, segs=24, bevel_width=0.010, radius2=0.048)
     led = create_beveled_box(f"Part_ShinLED_{side}", (0.008, 0.022, 0.035), (sign * (0.095 + sign * 0.058), 0.0, 0.16), mat_cyan, bevel_width=0.003)
@@ -330,7 +510,7 @@ def build_shin(side, sign):
 BOT_Shin_L = build_shin("L", 1.0)
 BOT_Shin_R = build_shin("R", -1.0)
 
-# --- 19 & 20. BOT_Boot_L and BOT_Boot_R ---
+# ==================== 19 & 20. BOT_Boot_L and BOT_Boot_R ====================
 def build_boot(side, sign):
     heel = create_beveled_box(f"BOT_Boot_{side}", (0.12, 0.13, 0.095), (sign * 0.095, 0.02, 0.075), mat_white, bevel_width=0.025, bevel_segs=4)
     toe = create_beveled_box(f"Part_Toe_{side}", (0.13, 0.12, 0.08), (sign * 0.095, -0.072, 0.065), mat_yellow, bevel_width=0.038, bevel_segs=4)
@@ -349,7 +529,6 @@ def build_boot(side, sign):
 BOT_Boot_L = build_boot("L", 1.0)
 BOT_Boot_R = build_boot("R", -1.0)
 
-# List of all 20 component objects
 components = [
     BOT_Head, BOT_Antenna, BOT_Ear_L, BOT_Ear_R, BOT_Scarf,
     BOT_Chest_Armor, BOT_Backpack, BOT_Pelvis,
@@ -379,24 +558,20 @@ bpy.context.view_layer.objects.active = armature_obj
 bpy.ops.object.mode_set(mode='EDIT')
 edit_bones = armature_data.edit_bones
 
-# Root bone
 b_root = edit_bones.new("Root")
 b_root.head = (0.0, 0.0, 0.38)
 b_root.tail = (0.0, 0.0, 0.44)
 
-# Torso bone
 b_torso = edit_bones.new("Torso")
 b_torso.parent = b_root
 b_torso.head = (0.0, 0.0, 0.38)
 b_torso.tail = (0.0, 0.0, 0.62)
 
-# Head bone
 b_head = edit_bones.new("Head")
 b_head.parent = b_torso
 b_head.head = (0.0, 0.0, 0.62)
 b_head.tail = (0.0, 0.0, 0.98)
 
-# Antenna bones
 b_ant_l = edit_bones.new("Antenna.L")
 b_ant_l.parent = b_head
 b_ant_l.head = (-0.015, 0.02, 1.00)
@@ -407,29 +582,26 @@ b_ant_r.parent = b_head
 b_ant_r.head = (0.015, 0.02, 1.00)
 b_ant_r.tail = (0.025, 0.05, 1.08)
 
-# Left Arm & Hand
 b_arm_l = edit_bones.new("Arm.L")
 b_arm_l.parent = b_torso
-b_arm_l.head = (0.175, 0.0, 0.50)
-b_arm_l.tail = (0.190, 0.0, 0.38)
+b_arm_l.head = (0.180, 0.0, 0.505)
+b_arm_l.tail = (0.192, 0.0, 0.38)
 
 b_hand_l = edit_bones.new("Hand.L")
 b_hand_l.parent = b_arm_l
-b_hand_l.head = (0.190, 0.0, 0.38)
-b_hand_l.tail = (0.190, 0.0, 0.22)
+b_hand_l.head = (0.192, 0.0, 0.38)
+b_hand_l.tail = (0.192, 0.0, 0.22)
 
-# Right Arm & Hand
 b_arm_r = edit_bones.new("Arm.R")
 b_arm_r.parent = b_torso
-b_arm_r.head = (-0.175, 0.0, 0.50)
-b_arm_r.tail = (-0.190, 0.0, 0.38)
+b_arm_r.head = (-0.180, 0.0, 0.505)
+b_arm_r.tail = (-0.192, 0.0, 0.38)
 
 b_hand_r = edit_bones.new("Hand.R")
 b_hand_r.parent = b_arm_r
-b_hand_r.head = (-0.190, 0.0, 0.38)
-b_hand_r.tail = (-0.190, 0.0, 0.22)
+b_hand_r.head = (-0.192, 0.0, 0.38)
+b_hand_r.tail = (-0.192, 0.0, 0.22)
 
-# Left Leg & Foot
 b_leg_l = edit_bones.new("Leg.L")
 b_leg_l.parent = b_root
 b_leg_l.head = (0.095, 0.0, 0.345)
@@ -440,7 +612,6 @@ b_foot_l.parent = b_leg_l
 b_foot_l.head = (0.095, 0.0, 0.20)
 b_foot_l.tail = (0.095, -0.06, 0.02)
 
-# Right Leg & Foot
 b_leg_r = edit_bones.new("Leg.R")
 b_leg_r.parent = b_root
 b_leg_r.head = (-0.095, 0.0, 0.345)
@@ -454,7 +625,7 @@ b_foot_r.tail = (-0.095, -0.06, 0.02)
 bpy.ops.object.mode_set(mode='OBJECT')
 
 # ---------------------------------------------------------
-# 5. Component Binding to Bones (Discrete Mesh Parenting)
+# 5. Component Binding to Bones
 # ---------------------------------------------------------
 bone_mapping = {
     "BOT_Head": "Head",
@@ -485,18 +656,14 @@ for comp in components:
     target_bone = bone_mapping[comp.name]
     comp.parent = armature_obj
     
-    # Create vertex groups for all bones
     for b_name in all_bone_names:
         vg = comp.vertex_groups.new(name=b_name)
         if b_name == target_bone:
             v_indices = [v.index for v in comp.data.vertices]
             vg.add(v_indices, 1.0, 'REPLACE')
             
-    # Add Armature Modifier
     mod = comp.modifiers.new("Armature", 'ARMATURE')
     mod.object = armature_obj
-
-print("All 20 component meshes bound to Armature successfully.")
 
 # ---------------------------------------------------------
 # 6. Complete 14 Production Animation Actions
@@ -531,7 +698,7 @@ def insert_loc(bone_name, frame, loc):
     pb.location = loc
     pb.keyframe_insert(data_path="location", frame=frame)
 
-# 1. Idle (2.0s looping breathing & sway)
+# 1. Idle (2.0s looping breathing & confident posture)
 act_idle = set_active_action("Idle")
 for f, z_off, p_torso, p_head in [(0, 0, 0, 0), (30, -0.015, 2, -1.5), (60, 0, 0, 0)]:
     insert_loc("Root", f, (0, 0, z_off))
@@ -540,7 +707,7 @@ for f, z_off, p_torso, p_head in [(0, 0, 0, 0), (30, -0.015, 2, -1.5), (60, 0, 0
     insert_rot("Arm.L", f, (10, 0, 8))
     insert_rot("Arm.R", f, (10, 0, -8))
 
-# 2. Idle_Secondary (Fidget: ear wiggle & happy bounce)
+# 2. Idle_Secondary
 act_idle_sec = set_active_action("Idle_Secondary")
 for f in [0, 60]:
     insert_loc("Root", f, (0, 0, 0))
@@ -549,10 +716,9 @@ insert_loc("Root", 20, (0, 0, 0.03))
 insert_rot("Head", 20, (0, 0, 15))
 insert_rot("Head", 40, (0, 0, -15))
 
-# 3. Walk (0.8s looping chibi march)
+# 3. Walk
 act_walk = set_active_action("Walk")
-walk_frames = [0, 6, 12, 18, 24]
-for idx, f in enumerate(walk_frames):
+for idx, f in enumerate([0, 6, 12, 18, 24]):
     phase = idx / 4.0 * 2.0 * math.pi
     l_rot = math.sin(phase) * 22
     r_rot = -math.sin(phase) * 22
@@ -564,10 +730,9 @@ for idx, f in enumerate(walk_frames):
     insert_rot("Arm.R", f, (-r_rot * 0.8, 0, -6))
     insert_rot("Head", f, (math.sin(phase) * 3, 0, 0))
 
-# 4. Run (0.5s brisk energetic dash)
+# 4. Run
 act_run = set_active_action("Run")
-run_frames = [0, 4, 8, 12, 15]
-for idx, f in enumerate(run_frames):
+for idx, f in enumerate([0, 4, 8, 12, 15]):
     phase = idx / 4.0 * 2.0 * math.pi
     l_rot = math.sin(phase) * 38
     r_rot = -math.sin(phase) * 38
@@ -580,7 +745,7 @@ for idx, f in enumerate(run_frames):
     insert_rot("Arm.L", f, (-l_rot * 1.1, 0, 10))
     insert_rot("Arm.R", f, (-r_rot * 1.1, 0, -10))
 
-# 5. Jump_Start (Squat and takeoff)
+# 5. Jump_Start
 act_jump_start = set_active_action("Jump_Start")
 insert_loc("Root", 0, (0, 0, 0))
 insert_loc("Root", 4, (0, 0, -0.04))
@@ -589,7 +754,7 @@ insert_rot("Torso", 4, (15, 0, 0))
 insert_rot("Leg.L", 4, (-25, 0, 0))
 insert_rot("Leg.R", 4, (-25, 0, 0))
 
-# 6. Jump_Loop (Airborne pose)
+# 6. Jump_Loop
 act_jump_loop = set_active_action("Jump_Loop")
 for f in [0, 9, 18]:
     insert_loc("Root", f, (0, 0, 0.02))
@@ -598,7 +763,7 @@ for f in [0, 9, 18]:
     insert_rot("Arm.L", f, (-35, 0, 25))
     insert_rot("Arm.R", f, (-35, 0, -25))
 
-# 7. Fall (Falling pose)
+# 7. Fall
 act_fall = set_active_action("Fall")
 for f in [0, 9, 18]:
     insert_loc("Root", f, (0, 0, 0))
@@ -607,7 +772,7 @@ for f in [0, 9, 18]:
     insert_rot("Arm.L", f, (-55, 0, 35))
     insert_rot("Arm.R", f, (-55, 0, -35))
 
-# 8. Landing (Impact squash and recover)
+# 8. Landing
 act_land = set_active_action("Landing")
 insert_loc("Root", 0, (0, 0, -0.06))
 insert_loc("Root", 5, (0, 0, -0.03))
@@ -625,19 +790,19 @@ act_turn_r = set_active_action("Turn_Right")
 insert_rot("Root", 0, (0, 0, 0))
 insert_rot("Root", 9, (0, -25, 0))
 
-# 11. Collect (Reach out and grasp)
+# 11. Collect
 act_collect = set_active_action("Collect")
 insert_rot("Arm.R", 0, (0, 0, 0))
 insert_rot("Arm.R", 8, (-65, 0, -10))
 insert_rot("Arm.R", 18, (0, 0, 0))
 
-# 12. Interact (Press mechanism button)
+# 12. Interact
 act_interact = set_active_action("Interact")
 insert_rot("Arm.R", 0, (0, 0, 0))
 insert_rot("Arm.R", 9, (-80, 0, 0))
 insert_rot("Arm.R", 18, (0, 0, 0))
 
-# 13. Victory (Joyful cheer & arms up!)
+# 13. Victory
 act_victory = set_active_action("Victory")
 for f in [0, 36]:
     insert_loc("Root", f, (0, 0, 0))
@@ -645,12 +810,11 @@ for f in [0, 36]:
     insert_rot("Arm.R", f, (-110, 0, -35))
 insert_loc("Root", 18, (0, 0, 0.08))
 
-# 14. Respawn (Rise from ground)
+# 14. Respawn
 act_respawn = set_active_action("Respawn")
 insert_loc("Root", 0, (0, 0, -0.3))
 insert_loc("Root", 24, (0, 0, 0))
 
-# Default back to Idle
 armature_obj.animation_data.action = act_idle
 
 # ---------------------------------------------------------
@@ -663,7 +827,6 @@ blend_paths = [
     "/Users/it/Documents/TINY PLANET/assets/blender/source/bot_character.blend"
 ]
 
-import os
 for bp in blend_paths:
     os.makedirs(os.path.dirname(bp), exist_ok=True)
     bpy.ops.wm.save_as_mainfile(filepath=bp)

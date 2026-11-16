@@ -1,11 +1,11 @@
 # LATEST_HANDOFF.md — Tiny Planet Session Handoff
 
 ## 1. Current State & Executive Summary
-- **Current Milestone:** Phase 6: Production-Quality 20-Component Articulated 3D Character ("B.O.T Production Rebuild") — 100% Complete & Verified.
+- **Current Milestone:** Phase 6.5: B.O.T Character Refinement — Premium Game Character Pass — 100% Complete & Verified.
 - **Engine:** Godot 4.7.1 Stable Standard (`/Users/it/bin/godot_app/Godot.app/Contents/MacOS/Godot`).
 - **3D Software:** Blender 5.2.3 LTS (`/Applications/Blender.app/Contents/MacOS/Blender`).
 - **Deployment:** GitHub Pages live at `https://cuong2000aa.github.io/tiny-planet/` | Repository: `https://github.com/Cuong2000aa/tiny-planet`.
-- **Primary Achievement:** Replaced the previous unified joined mesh with a true production-quality modular hard-surface character comprising 20 discrete articulated `MeshInstance3D` components. Built directly from the official Character Turnaround Sheet (`media_1794801712994_79a8c181.jpg`), featuring recessed visor bezel cavity, flush obsidian visor, cyan pill LED eyes, golden sprout antenna, concentric cyan ear canisters, fluffy scarf with front triangular bib & reactor, dual dynamic trailing scarf tails, tapered ceramic breastplate, royal blue utility backpack, dark graphite navy joints/hands, and chunky platformer sneakers with yellow toe bumpers and royal blue soles. 100% automated test assertions pass.
+- **Primary Achievement:** Substantial character art refinement elevating B.O.T from primitive toy aesthetics into a console-quality 3D adventure protagonist. Implemented draped yellow fabric adventure scarf with natural folds, front bandana bib, and dual fluttering tails; sculpted ceramic pectoral breastplate with integrated cyan triangular reactor core; broad athletic shoulder pauldrons with visible elbow hinge mechanics; flared gauntlets with cyan status glyphs; articulated robotic gloves with thumb and fingers; muscular thigh armor with mechanical knee caps; and athletic adventure sneakers with yellow toe bumpers, white heel counters, and royal blue runner soles. Verified across all test suites, re-exported Web build, and deployed live.
 
 ## 2. Deliverables & File Locations
 - **Blender Source:**
@@ -24,11 +24,12 @@
   - `scripts/tests/test_gameplay.gd` (verifies full gameplay loop: movement, collection, switch, bridge, portal, victory).
   - `scripts/tests/inspect_bot_hierarchy.gd` (verifies 20 distinct `MeshInstance3D` objects under `Skeleton3D`).
 - **Validation Render Artifacts:**
-  - `bot_v6_front.png`
-  - `bot_v6_three_quarter.png`
-  - `bot_v6_profile_right.png`
-  - `bot_v6_back.png`
-  - `bot_v6_hero.png`
+  - `bot_premium_front.png`
+  - `bot_premium_three_quarter.png`
+  - `bot_premium_side.png`
+  - `bot_premium_back.png`
+  - `bot_premium_gameplay_dist.png`
+  - `bot_premium_hero.png`
 
 ## 3. Verified Architecture & Compatibility
 - **20 Discrete Articulated Components:**
@@ -38,8 +39,8 @@
 - **14 Animation Actions in AnimationPlayer:**
   `Idle`, `Idle_Secondary`, `Walk`, `Run`, `Jump_Start`, `Jump_Loop`, `Fall`, `Landing`, `Turn_Left`, `Turn_Right`, `Collect`, `Interact`, `Victory`, `Respawn`.
 - **Godot Project Settings:**
-  `import/blender/enabled=false` configured in `project.godot` to prevent headless blend-importer warnings.
+  `import/blender/enabled=false` configured in `project.godot`.
 
 ## 4. Next Immediate Steps
-1. Push release commit and tag `v6.0-production-bot` to remote repository (`origin main --tags`).
-2. Proceed to Level 2 expansion ("Sky Archipelago Ruins") or audio settings menu as scheduled in the development roadmap.
+1. Push release commit and tag `v6.5-premium-bot` to remote repository (`origin main --tags`).
+2. Proceed to Level 2 expansion ("Sky Archipelago Ruins") or audio settings menu.

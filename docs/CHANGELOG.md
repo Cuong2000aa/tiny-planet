@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [6.5.0-premium-bot] - 2026-11-16
+### Changed
+- **B.O.T Character Refinement — Premium Game Character Pass:**
+  - **Draped Adventure Scarf:** Completely replaced the rigid neck ring with a draped yellow fabric cloth cowl featuring natural thickness and folds, a front triangular bandana fold with an inverted royal blue badge and glowing cyan core, and dual dynamic fluttering ribbon tails.
+  - **Layered Engineered Torso:** Redesigned the torso with a sculpted white ceramic pectoral breastplate tapering to the waist, an integrated blue bezel framing the glowing cyan triangular reactor rune, and a dark graphite navy inner mechanical chassis and spine.
+  - **Broad Athletic Shoulders & Arms:** Replaced floating spherical shoulders with angular yet smoothly beveled white pauldrons with protective outer flanges; added visible mechanical elbow hinges with royal blue pivot pins; sculpted flared ceramic gauntlets with royal blue wrist cuffs and cyan status glyphs; articulated robotic gloves with palm chassis, opposable thumb, fingers, and backplates.
+  - **Sculpted Legs & Robotic Adventure Boots:** Added muscular white thigh armor over dark ball joints, mechanical knee caps, flared shin gaiters with cyan LED strips, and athletic robotic adventure sneakers with rounded bulbous yellow toe bumper caps, white heel counters, and multi-tiered royal blue tread soles.
+  - **Premium PBR Materials:** Tuned pearl white ceramic with specular clearcoat (`Clearcoat 0.35`, `Roughness 0.18`), deep royal cobalt blue (`Metallic 0.12`), warm rich yellow fabric (`Roughness 0.35`), deep obsidian visor glass (`Roughness 0.02`, `Clearcoat 1.0`), and intense cyan LED emission (`Strength 5.5`).
+  - **Verification & Deployment:** 100% assertions passed in `test_character_animation.gd` and `test_gameplay.gd`. Re-exported Web release build and deployed live to GitHub Pages.
+
 ## [6.0.0-production-bot] - 2026-11-16
 ### Added
 - **Production-Quality Rebuild with 20 Discrete Articulated Meshes:**
