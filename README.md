@@ -7,7 +7,7 @@ Inspired by the tactile joy of *Astro Bot*, **Tiny Planet** puts you in control 
 ---
 
 ## 🎮 Play in Browser
-- **Live GitHub Pages URL:** *(Configured via GitHub Actions)*
+- **Live GitHub Pages URL:** [https://cuong2000aa.github.io/tiny-planet/](https://cuong2000aa.github.io/tiny-planet/)
 - **Platforms:** Desktop (Chrome, Firefox, Safari, Edge) & Mobile (iOS Safari, Android Chrome).
 
 ## 🕹️ Controls

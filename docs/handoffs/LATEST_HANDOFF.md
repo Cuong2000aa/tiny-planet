@@ -5,6 +5,8 @@ Tiny Planet is an autonomous 3D adventure platformer developed for the web using
 
 ## 2. Current Milestone
 Milestone 5: Deployment and Validation (Complete & Verified Prototype v1.0).
+- **Live Public URL:** https://cuong2000aa.github.io/tiny-planet/
+- **GitHub Repository:** https://github.com/Cuong2000aa/tiny-planet
 
 ## 3. Completed Work
 1. **Engine & Configuration:** Configured `project.godot` (Compatibility renderer, display settings, input map for WASD + Space + E + Touch emulation) and `export_presets.cfg` (single-threaded Web export).
