@@ -1,0 +1,188 @@
+[gd_scene format=3 uid="uid://c1l2e3v4e5l6s"]
+
+[ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="1_player"]
+[ext_resource type="PackedScene" path="res://scenes/player/camera.tscn" id="2_cam"]
+[ext_resource type="PackedScene" path="res://scenes/collectibles/energy_fragment.tscn" id="3_frag"]
+[ext_resource type="PackedScene" path="res://scenes/interactive/switch_pedestal.tscn" id="4_switch"]
+[ext_resource type="PackedScene" path="res://scenes/interactive/energy_bridge.tscn" id="5_bridge"]
+[ext_resource type="PackedScene" path="res://scenes/interactive/exit_portal.tscn" id="6_portal"]
+[ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="7_hud"]
+[ext_resource type="Script" path="res://scripts/levels/game_manager.gd" id="8_gm"]
+[ext_resource type="PackedScene" path="res://assets/models/floating_island.glb" id="9_island_model"]
+[ext_resource type="AudioStream" path="res://assets/audio/ambient.wav" id="10_ambient"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
+sky_top_color = Color(0.35, 0.65, 0.95, 1)
+sky_horizon_color = Color(0.72, 0.85, 0.95, 1)
+ground_bottom_color = Color(0.18, 0.22, 0.3, 1)
+ground_horizon_color = Color(0.55, 0.72, 0.85, 1)
+
+[sub_resource type="Sky" id="Sky_env"]
+sky_material = SubResource("ProceduralSkyMaterial_sky")
+
+[sub_resource type="Environment" id="Environment_main"]
+background_mode = 2
+sky = SubResource("Sky_env")
+ambient_light_source = 2
+ambient_light_color = Color(0.85, 0.9, 0.98, 1)
+ambient_light_energy = 0.6
+tonemap_mode = 2
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_island"]
+height = 1.0
+radius = 7.0
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_step"]
+height = 0.5
+radius = 1.35
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_step"]
+albedo_color = Color(0.48, 0.62, 0.45, 1)
+roughness = 0.75
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_step"]
+material = SubResource("StandardMaterial3D_step")
+top_radius = 1.35
+bottom_radius = 1.15
+height = 0.5
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_crystal_prop"]
+albedo_color = Color(0.2, 0.9, 1, 1)
+emission_enabled = true
+emission = Color(0, 0.85, 1, 1)
+emission_energy_multiplier = 2.0
+
+[sub_resource type="BoxMesh" id="BoxMesh_crystal"]
+material = SubResource("StandardMaterial3D_crystal_prop")
+size = Vector3(0.3, 0.9, 0.3)
+
+[node name="AwakeningIsland" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_main")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866025, -0.353553, 0.353553, 0, 0.707107, 0.707107, -0.5, -0.612372, 0.612372, 0, 20, 0)
+light_color = Color(1, 0.97, 0.92, 1)
+light_energy = 1.2
+shadow_enabled = true
+
+[node name="AmbientAudio" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("10_ambient")
+volume_db = -8.0
+autoplay = true
+
+[node name="Environment" type="Node3D" parent="."]
+
+[node name="Island1_Awakening" type="StaticBody3D" parent="Environment"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Environment/Island1_Awakening"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+shape = SubResource("CylinderShape3D_island")
+
+[node name="IslandModel" parent="Environment/Island1_Awakening" instance=ExtResource("9_island_model")]
+
+[node name="Props" type="Node3D" parent="Environment/Island1_Awakening"]
+
+[node name="Crystal1" type="MeshInstance3D" parent="Environment/Island1_Awakening/Props"]
+transform = Transform3D(0.9, 0, 0.4, 0.3, 0.9, 0, -0.3, 0.4, 0.9, -3.5, 0.4, -2.0)
+mesh = SubResource("BoxMesh_crystal")
+
+[node name="Crystal2" type="MeshInstance3D" parent="Environment/Island1_Awakening/Props"]
+transform = Transform3D(0.7, 0, -0.7, 0, 1, 0, 0.7, 0, 0.7, 4.0, 0.4, 1.5)
+mesh = SubResource("BoxMesh_crystal")
+
+[node name="JumpChallengeSteps" type="Node3D" parent="Environment"]
+
+[node name="Step1" type="StaticBody3D" parent="Environment/JumpChallengeSteps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 8.5)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Environment/JumpChallengeSteps/Step1"]
+shape = SubResource("CylinderShape3D_step")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Environment/JumpChallengeSteps/Step1"]
+mesh = SubResource("CylinderMesh_step")
+
+[node name="Step2" type="StaticBody3D" parent="Environment/JumpChallengeSteps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.6, 1.1, 11.5)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Environment/JumpChallengeSteps/Step2"]
+shape = SubResource("CylinderShape3D_step")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Environment/JumpChallengeSteps/Step2"]
+mesh = SubResource("CylinderMesh_step")
+
+[node name="Step3" type="StaticBody3D" parent="Environment/JumpChallengeSteps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 14.5)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Environment/JumpChallengeSteps/Step3"]
+shape = SubResource("CylinderShape3D_step")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Environment/JumpChallengeSteps/Step3"]
+mesh = SubResource("CylinderMesh_step")
+
+[node name="Step4" type="StaticBody3D" parent="Environment/JumpChallengeSteps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.6, 2.5, 17.5)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Environment/JumpChallengeSteps/Step4"]
+shape = SubResource("CylinderShape3D_step")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Environment/JumpChallengeSteps/Step4"]
+mesh = SubResource("CylinderMesh_step")
+
+[node name="Island2_Sanctuary" type="StaticBody3D" parent="Environment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.0, 26.0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Environment/Island2_Sanctuary"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+shape = SubResource("CylinderShape3D_island")
+
+[node name="IslandModel" parent="Environment/Island2_Sanctuary" instance=ExtResource("9_island_model")]
+
+[node name="Island3_Exit" type="StaticBody3D" parent="Environment"]
+transform = Transform3D(0.7, 0, 0, 0, 0.7, 0, 0, 0, 0.7, 0, 4.0, 47.0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Environment/Island3_Exit"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+shape = SubResource("CylinderShape3D_island")
+
+[node name="IslandModel" parent="Environment/Island3_Exit" instance=ExtResource("9_island_model")]
+
+[node name="Collectibles" type="Node3D" parent="."]
+
+[node name="EnergyFragment1" parent="Collectibles" instance=ExtResource("3_frag")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.0, 23.0)
+
+[node name="EnergyFragment2" parent="Collectibles" instance=ExtResource("3_frag")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2, 4.0, 27.0)
+
+[node name="EnergyFragment3" parent="Collectibles" instance=ExtResource("3_frag")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2, 4.0, 27.0)
+
+[node name="Interactive" type="Node3D" parent="."]
+
+[node name="SwitchPedestal" parent="Interactive" instance=ExtResource("4_switch")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.0, 31.5)
+
+[node name="EnergyBridge" parent="Interactive" instance=ExtResource("5_bridge")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.2, 33.0)
+
+[node name="ExitPortal" parent="Interactive" instance=ExtResource("6_portal")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.0, 48.0)
+
+[node name="Player" parent="." node_paths=PackedStringArray("camera_controller") instance=ExtResource("1_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
+camera_controller = NodePath("../CameraController")
+
+[node name="CameraController" parent="." node_paths=PackedStringArray("target") instance=ExtResource("2_cam")]
+target = NodePath("../Player")
+
+[node name="HUD" parent="." instance=ExtResource("7_hud")]
+
+[node name="GameManager" type="Node" parent="." node_paths=PackedStringArray("player", "hud", "switch_pedestal", "energy_bridge", "exit_portal")]
+script = ExtResource("8_gm")
+player = NodePath("../Player")
+hud = NodePath("../HUD")
+switch_pedestal = NodePath("../Interactive/SwitchPedestal")
+energy_bridge = NodePath("../Interactive/EnergyBridge")
+exit_portal = NodePath("../Interactive/ExitPortal")
