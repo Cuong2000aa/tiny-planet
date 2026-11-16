@@ -1,59 +1,45 @@
-# Latest Session Handoff — Tiny Planet
+# LATEST_HANDOFF.md — Tiny Planet Session Handoff
 
-## 1. Project Overview
-Tiny Planet is an autonomous 3D adventure platformer developed for the web using Godot 4.7.1 Stable Standard with Compatibility renderer, WebGL 2.0, single-threaded export, hosted live on GitHub Pages. Inspired by Astro Bot's tactile charm, players control B.O.T exploring vibrant floating sky islands.
+## 1. Current State & Executive Summary
+- **Current Milestone:** Phase 6: Production-Quality 20-Component Articulated 3D Character ("B.O.T Production Rebuild") — 100% Complete & Verified.
+- **Engine:** Godot 4.7.1 Stable Standard (`/Users/it/bin/godot_app/Godot.app/Contents/MacOS/Godot`).
+- **3D Software:** Blender 5.2.3 LTS (`/Applications/Blender.app/Contents/MacOS/Blender`).
+- **Deployment:** GitHub Pages live at `https://cuong2000aa.github.io/tiny-planet/` | Repository: `https://github.com/Cuong2000aa/tiny-planet`.
+- **Primary Achievement:** Replaced the previous unified joined mesh with a true production-quality modular hard-surface character comprising 20 discrete articulated `MeshInstance3D` components. Built directly from the official Character Turnaround Sheet (`media_1794801712994_79a8c181.jpg`), featuring recessed visor bezel cavity, flush obsidian visor, cyan pill LED eyes, golden sprout antenna, concentric cyan ear canisters, fluffy scarf with front triangular bib & reactor, dual dynamic trailing scarf tails, tapered ceramic breastplate, royal blue utility backpack, dark graphite navy joints/hands, and chunky platformer sneakers with yellow toe bumpers and royal blue soles. 100% automated test assertions pass.
 
-## 2. Current State
-- **Phase:** Phase 5: Authoritative Character Turnaround Production ("B.O.T Hero Turnaround") — Completed & Verified!
-- **Public URL:** https://cuong2000aa.github.io/tiny-planet/
-- **GitHub Repository:** https://github.com/Cuong2000aa/tiny-planet
-- **Milestone Tag:** `v5.1-character-refinement`
+## 2. Deliverables & File Locations
+- **Blender Source:**
+  - `assets/models/character/bot.blend`
+  - `assets/models/source/bot.blend`
+  - `assets/blender/source/bot.blend`
+  - `assets/blender/source/bot_character.blend`
+- **Game-Ready GLB Assets:**
+  - `assets/models/characters/bot.glb` (instantiated in `scenes/player/player.tscn`)
+  - `assets/models/character/bot.glb`
+  - `assets/models/bot.glb`
+- **Blender Automation Pipeline:**
+  - `assets/blender/scripts/generate_character.py` (builds all 20 components, armature, UV unwrapping, 14 actions, and exports .blend + .glb).
+- **Test Scripts:**
+  - `scripts/tests/test_character_animation.gd` (verifies Skeleton3D, 13 bones, 14 actions, locomotion and action triggers).
+  - `scripts/tests/test_gameplay.gd` (verifies full gameplay loop: movement, collection, switch, bridge, portal, victory).
+  - `scripts/tests/inspect_bot_hierarchy.gd` (verifies 20 distinct `MeshInstance3D` objects under `Skeleton3D`).
+- **Validation Render Artifacts:**
+  - `bot_v6_front.png`
+  - `bot_v6_three_quarter.png`
+  - `bot_v6_profile_right.png`
+  - `bot_v6_back.png`
+  - `bot_v6_hero.png`
 
-## 3. Completed Work in Phase 5
-1. **Substantial 3D Character Refinement:**
-   - Overhauled Blender modeling in `assets/blender/scripts/generate_character.py`.
-   - Saved editable Blender projects to `assets/models/character/bot.blend`, `assets/models/source/bot.blend`, and `assets/blender/source/bot.blend`.
-   - Exported optimized game-ready GLBs to `assets/models/character/bot.glb`, `assets/models/characters/bot.glb`, and `assets/models/bot.glb`.
-   - Replaced all primitive stacked shapes with smooth beveled quad surfaces:
-     - Rounded ivory ceramic helmet with smooth outer bezel.
-     - Deep black glass visor lens with zero clipping artifacts.
-     - Flush-mounted cyan LED capsule pill eyes.
-     - Golden yellow sprout antenna with aerodynamic teardrop leaf.
-     - Concentric ear assemblies with yellow rim, blue housing, cyan glowing ring, and navy hub.
-     - Puffy golden yellow fleece scarf with front triangular bib & glowing cyan energy core.
-     - Dual S-curve fluttering tails over the shoulders.
-     - Beveled white torso chassis with glowing cyan chest core, navy pelvis harness, and royal blue backpack.
-     - Articulated limbs with compact navy joints, white sleeves, blue wrist cuffs, and outer cyan cross decals.
-     - Modeled chibi robotic hands with palm, opposable thumb, and sculpted fingers.
-     - High-appeal boots with bulbous yellow toe caps, blue heel/sole wrap, and cyan ankle LED dots.
-2. **Material Overhaul:**
-   - High-end PBR materials: warm pearl white (`coat=0.45`), saturated royal blue, bright golden yellow, deep graphite navy, obsidian glass (`coat=1.0`), and neon cyan emissive.
-3. **Rigging & Animation Integrity:**
-   - Full humanoid skeleton preserved (`Root`, `Hips`, `Torso`, `Chest`, `Neck`, `Head`, `Antenna.L/R`, `Shoulder.L/R`, `Arm.L/R`, `Hand.L/R`, `Thumb.L/R`, `Fingers.L/R`, `Leg.L/R`, `Foot.L/R`).
-   - All 14 custom animations preserved and verified.
-4. **Verification & Deployment:**
-   - `test_character_animation.gd`: 100% passed.
-   - `test_gameplay.gd`: 100% passed.
-   - Release Web export completed and deployed live to GitHub Pages.
+## 3. Verified Architecture & Compatibility
+- **20 Discrete Articulated Components:**
+  `BOT_Head`, `BOT_Antenna`, `BOT_Ear_L`, `BOT_Ear_R`, `BOT_Scarf`, `BOT_Chest_Armor`, `BOT_Backpack`, `BOT_Pelvis`, `BOT_Arm_L`, `BOT_Arm_R`, `BOT_Forearm_L`, `BOT_Forearm_R`, `BOT_Hand_L`, `BOT_Hand_R`, `BOT_Thigh_L`, `BOT_Thigh_R`, `BOT_Shin_L`, `BOT_Shin_R`, `BOT_Boot_L`, `BOT_Boot_R`.
+- **13 Deformation Bones in `BOT_Armature`:**
+  `Root`, `Torso`, `Head`, `Antenna.L`, `Antenna.R`, `Arm.L`, `Hand.L`, `Arm.R`, `Hand.R`, `Leg.L`, `Foot.L`, `Leg.R`, `Foot.R`.
+- **14 Animation Actions in AnimationPlayer:**
+  `Idle`, `Idle_Secondary`, `Walk`, `Run`, `Jump_Start`, `Jump_Loop`, `Fall`, `Landing`, `Turn_Left`, `Turn_Right`, `Collect`, `Interact`, `Victory`, `Respawn`.
+- **Godot Project Settings:**
+  `import/blender/enabled=false` configured in `project.godot` to prevent headless blend-importer warnings.
 
-## 4. How to Run & Verify
-```bash
-# Run automated character & animation verification test:
-/Users/it/bin/godot_app/Godot.app/Contents/MacOS/Godot --path . --headless -s scripts/tests/test_character_animation.gd
-
-# Run automated gameplay tests:
-/Users/it/bin/godot_app/Godot.app/Contents/MacOS/Godot --path . --headless -s scripts/tests/test_gameplay.gd
-
-# Run game in Godot:
-/Users/it/bin/godot_app/Godot.app/Contents/MacOS/Godot --path .
-
-# Regenerate B.O.T character and animations in Blender:
-/Applications/Blender.app/Contents/MacOS/Blender --background --python assets/blender/scripts/generate_character.py
-
-# Export web build:
-/Users/it/bin/godot_app/Godot.app/Contents/MacOS/Godot --path . --headless --export-release "Web" web-build/index.html
-```
-
-## 5. Next Recommended Task
-- Level 2: Sky Archipelago Ruins (vertical platforming with moving stone platforms and interactive laser mirrors).
-- Audio options in pause menu (master, SFX, and music volume sliders).
+## 4. Next Immediate Steps
+1. Push release commit and tag `v6.0-production-bot` to remote repository (`origin main --tags`).
+2. Proceed to Level 2 expansion ("Sky Archipelago Ruins") or audio settings menu as scheduled in the development roadmap.

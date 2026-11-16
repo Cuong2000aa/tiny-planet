@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## [6.0.0-production-bot] - 2026-11-16
+### Added
+- **Production-Quality Rebuild with 20 Discrete Articulated Meshes:**
+  - Resolved the core technical blocker where primitive geometries were previously merged into a single joined mesh with `bpy.ops.object.join()`.
+  - Rebuilt B.O.T from scratch in Blender 5.2.3 LTS as 20 separate, logically named, beveled, and articulated `MeshInstance3D` components under Godot's `Skeleton3D`:
+    1. `BOT_Head`: Beveled squircle helmet with recessed front visor pocket and royal blue crown armor.
+    2. `BOT_Antenna`: Curved golden yellow sprout with teardrop leaf fin.
+    3-4. `BOT_Ear_L` & `BOT_Ear_R`: Yellow outer bezel, royal blue housing, glowing concentric cyan LED ring, and dark navy hub.
+    5. `BOT_Scarf`: Yellow neck cowl with front triangular bib, inverted triangle badge, cyan power core, and dual fluttering ribbon tails.
+    6. `BOT_Chest_Armor`: Tapered ceramic breastplate with integrated cyan triangular reactor core.
+    7. `BOT_Backpack`: Royal blue utility pack with recessed cyan inverted triangle rune and yellow mounting straps.
+    8. `BOT_Pelvis`: Graphite navy mechanical waist chassis.
+    9-10. `BOT_Arm_L` & `BOT_Arm_R`: Shoulder pauldron cap, bicep sleeve, and elbow pivot.
+    11-12. `BOT_Forearm_L` & `BOT_Forearm_R`: Chunky flared gauntlet with royal blue cuff ring and cyan status glyph.
+    13-14. `BOT_Hand_L` & `BOT_Hand_R`: Articulated robotic glove with palm chassis, thumb, fingers, and pearl white backplate guard.
+    15-16. `BOT_Thigh_L` & `BOT_Thigh_R`: Ball hip joint and chunky white thigh armor sleeve.
+    17-18. `BOT_Shin_L` & `BOT_Shin_R`: Flared white shin gaiter with cyan outer ankle indicator.
+    19-20. `BOT_Boot_L` & `BOT_Boot_R`: Chunky rounded hero sneakers with golden yellow toe bumpers, royal blue tread soles, and cyan LED pills.
+  - **Recessed Visor Cavity:** Modeled using a precise boolean difference pocket cut into the helmet face, eliminating any planar protrusion or z-fighting.
+  - **Armature Rigging & Animations:** 13 deformation bones, vertex group weight assignment for each component, and 14 keyframed actions.
+  - **Verification:** 100% assertions passed in `test_character_animation.gd` and `test_gameplay.gd`. All 20 components confirmed distinct in `inspect_bot_hierarchy.gd`.
+  - **Deployment:** Re-exported Web release build to `web-build/` and deployed live to GitHub Pages.
+
 ## [5.1.0-character-refinement] - 2026-11-16
 ### Changed
 - **Substantial 3D Character Model & Material Refinement:**
