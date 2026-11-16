@@ -1,0 +1,38 @@
+[gd_scene format=3 uid="uid://p7y9c6p6a7b8c"]
+
+[ext_resource type="Script" path="res://scripts/interactive/exit_portal.gd" id="1_ep"]
+[ext_resource type="PackedScene" path="res://assets/models/portal_gate.glb" id="2_ep_model"]
+[ext_resource type="AudioStream" path="res://assets/audio/portal.wav" id="3_sfx_portal"]
+[ext_resource type="AudioStream" path="res://assets/audio/victory.wav" id="4_sfx_victory"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_portal"]
+size = Vector3(2.5, 3.0, 1.2)
+
+[node name="ExitPortal" type="Area3D"]
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("1_ep")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+shape = SubResource("BoxShape3D_portal")
+
+[node name="VisualRoot" type="Node3D" parent="."]
+
+[node name="PortalGateModel" parent="VisualRoot" instance=ExtResource("2_ep_model")]
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
+light_color = Color(0.2, 0.9, 1, 1)
+light_energy = 3.0
+omni_range = 5.0
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+stream = ExtResource("3_sfx_portal")
+volume_db = -1.0
+
+[node name="VictoryAudio" type="AudioStreamPlayer3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+stream = ExtResource("4_sfx_victory")
+volume_db = 2.0
